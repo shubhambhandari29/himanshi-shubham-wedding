@@ -105,3 +105,39 @@ if (!reduceMotion && 'IntersectionObserver' in window) {
   }), {threshold: .12});
   document.querySelectorAll('.memory-card, .story-portrait, .closing-photo').forEach(item => reveal.observe(item));
 }
+
+// The date overview jumps straight into an expanded celebration.
+document.querySelectorAll('.date-event').forEach(link => link.addEventListener('click', () => {
+  const target = document.querySelector(link.getAttribute('href'));
+  document.querySelector('[data-filter="all"]').click();
+  const details = target.querySelector('.details-button');
+  if (details.getAttribute('aria-expanded') !== 'true') details.click();
+}));
+const menuToggle = document.querySelector('.menu-toggle');
+const mainNav = document.querySelector('#main-nav');
+function closeMenu() {
+  mainNav.classList.remove('open');
+  menuToggle.setAttribute('aria-expanded', 'false');
+  menuToggle.setAttribute('aria-label', 'Open navigation');
+}
+menuToggle.addEventListener('click', () => {
+  const open = menuToggle.getAttribute('aria-expanded') !== 'true';
+  mainNav.classList.toggle('open', open);
+  menuToggle.setAttribute('aria-expanded', String(open));
+  menuToggle.setAttribute('aria-label', open ? 'Close navigation' : 'Open navigation');
+});
+mainNav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+document.addEventListener('keydown', event => { if (event.key === 'Escape') closeMenu(); });
+const readingProgress = document.querySelector('.reading-progress');
+const mobileDates = document.querySelector('.mobile-date-link');
+let scrollPending = false;
+function updateScroll() {
+  const height = document.documentElement.scrollHeight - window.innerHeight;
+  readingProgress.style.width = `${height > 0 ? Math.min(100, window.scrollY / height * 100) : 0}%`;
+  mobileDates.classList.toggle('visible', window.scrollY > 750);
+  scrollPending = false;
+}
+window.addEventListener('scroll', () => {
+  if (!scrollPending) { scrollPending = true; requestAnimationFrame(updateScroll); }
+}, {passive: true});
+updateScroll();

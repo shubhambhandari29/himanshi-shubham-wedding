@@ -16,3 +16,10 @@ Deploy the root folder to any static hosting service or GitHub Pages. No build s
 
 ## Photo album
 The hero, story, and closing sections now feature the supplied photographs, alongside a ten-photo memories gallery. All photo buttons share one full-screen viewer with previous/next controls, arrow-key navigation, touch swipes, Escape dismissal, and restored keyboard focus. The original uploads are preserved. Images below the opening portrait load lazily; motion follows the visitor's reduced-motion preference. Gallery selections are in `index.html` (`data-photo` and `data-caption`).
+
+## Hosting
+Live invitation: https://shubhambhandari29.github.io/himanshi-shubham-wedding/
+GitHub Pages publishes `main` from the repository root. Commit and push to update the live site. Only the selected photographs are tracked; unselected JPEG uploads are ignored.
+
+## Mountain redesign
+The new invitation has original mountain artwork, large calligraphic names, a clickable three-day calendar, full-width celebration sections, venue and travel cards, responsive navigation, reading progress, and the existing accessible photo album. See `DESIGN_NOTES.md` for artwork provenance and its generation prompt. No guest information is stored.
