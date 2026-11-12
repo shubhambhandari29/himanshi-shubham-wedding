@@ -1,3 +1,9 @@
+# हिंदी शाखा — `hindi-devanagari`
+
+यह अलग हिंदी संस्करण है। पूरा निमंत्रण देवनागरी में है; मूल साँचा, तस्वीरें और क्रियाएँ बरकरार हैं। `main` और प्रकाशित वेबसाइट में बदलाव नहीं किया गया है। स्थानीय पूर्वावलोकन: http://localhost:5173/ । विवरण: [हिंदी संस्करण के नोट्स](docs/HINDI.md)।
+
+---
+
 # Himanshi & Shubham — an invitation on the water
 
 A static, mobile-first wedding invitation, with an animated flower boat, independent watercolour lotus layers, a real scratch-to-reveal date, a framed invitation, family-specific celebrations, a swipeable album, an IST countdown, venue/travel cards, and a WhatsApp draft builder. No backend, guest database, tracking, or stored RSVP data.
