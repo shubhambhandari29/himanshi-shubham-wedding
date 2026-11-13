@@ -386,3 +386,6 @@ html[lang=hi] .brand{display:block;width:66px;height:66px;flex-shrink:0}
 html[lang=hi] .crest{width:180px;height:180px;padding:0;border:0;border-radius:0;background:none;margin:0 auto 22px}
 html[lang=hi] .closing-section .crest{width:150px;height:150px;margin:25px auto 0}
 @media(max-width:600px){html[lang=hi] .opening-mark{width:82px;height:82px}html[lang=hi] .brand{width:56px;height:56px}html[lang=hi] .crest{width:150px;height:150px}html[lang=hi] .closing-section .crest{width:130px;height:130px}}
+
+/* Blend the supplied paper texture into the invitation, with no square edge. */
+.couple-logo{mix-blend-mode:multiply;-webkit-mask-image:radial-gradient(ellipse at center,#000 53%,transparent 73%);mask-image:radial-gradient(ellipse at center,#000 53%,transparent 73%)}

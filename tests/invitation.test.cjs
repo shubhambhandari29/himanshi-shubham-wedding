@@ -8,7 +8,7 @@ const cssTree=require('css-tree');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 
-function setup({url='http://localhost:5173/',reduced=false,canvas=true,contact=null,music=false,clipboard=false,dpr=1,observeTimeline=false,weddingTime=undefined}={}) {
+function setup({url='http://localhost:5173/',reduced=false,canvas=true,contact=null,music=false,clipboard=false,dpr=1,observeTimeline=false,weddingTime=undefined,autoplayAllowed=false}={}) {
   const errors=[],downloads=[],opened=[],copied=[],animations=[],observers=[];
   const virtualConsole=new VirtualConsole();virtualConsole.on('jsdomError',error=>errors.push(error));
   const dom=new JSDOM(html,{url,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole});
@@ -51,7 +51,8 @@ function setup({url='http://localhost:5173/',reduced=false,canvas=true,contact=n
   let audioPaused=true,audioPlays=0;
   const audio=d.querySelector('audio');
   Object.defineProperty(audio,'paused',{get:()=>audioPaused});
-  audio.play=async()=>{audioPaused=false;audioPlays++;audio.dispatchEvent(new w.Event('play'))};
+  let playAttempts=0;
+  audio.play=async()=>{if(playAttempts++===0&&!autoplayAllowed)throw new w.DOMException('Autoplay blocked','NotAllowedError');audioPaused=false;audioPlays++;audio.dispatchEvent(new w.Event('play'))};
   audio.pause=()=>{audioPaused=true;audio.dispatchEvent(new w.Event('pause'))};
   w.eval(fs.readFileSync(path.join(root,'script.js'),'utf8'));
   return{dom,w,d,errors,downloads,opened,copied,backing,getBacking,animations,observers,audioPlays:()=>audioPlays,close:()=>w.close()};
@@ -103,7 +104,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
  test('calendar is date-only when wedding time is unconfirmed and exports the actual venue',t=>{const env=setup({weddingTime:null});t.after(env.close);const event=env.w.WEDDING.events.find(e=>e.id==='wedding'),ics=env.w.WeddingApp.calendarText(event);assert.match(ics,/DTSTART;VALUE=DATE:20270210\r\nDTEND;VALUE=DATE:20270211/);assert.match(ics,/LOCATION:शिवप्रिया फार्म्स\\, देहरादून/);assert.match(ics,/आयोजन का सही समय अभी तय नहीं है/);env.d.querySelector('[data-calendar="wedding"]').click();assert.equal(env.downloads.length,1);assert.match(env.d.querySelector('[data-map="wedding"]').href,/Shivpriya%20Farms/)});
  test('countdown uses IST wedding date, has a date-only label and a post-date message',t=>{const env=setup({weddingTime:null});t.after(env.close);env.w.WeddingApp.updateCountdown(new Date('2027-02-09T18:29:00Z'));assert.equal(env.d.querySelector('#minutes').textContent,'01');assert.match(env.d.querySelector('#countdown-note').textContent,/विवाह तिथि के आरंभ तक/);env.w.WeddingApp.updateCountdown(new Date('2027-02-10T00:00:00Z'));assert.equal(env.d.querySelector('#days').textContent,'00');assert.match(env.d.querySelector('#countdown-note').textContent,/शुभारंभ हो चुका है/)});
  test('gallery touch-friendly scrolling, lightbox navigation, close and restored focus',t=>{const env=setup();t.after(env.close);const{d,w}=env;assert.equal(d.querySelectorAll('.photo-memory').length,10);d.querySelector('#gallery-next').click();assert(d.querySelector('#photo-track').scrollLeft>0);const opener=d.querySelector('[data-photo="0"]');opener.focus();opener.click();assert(d.querySelector('#photo-dialog').open);const initial=d.querySelector('#lightbox-image').src;d.querySelector('#photo-next').click();assert.notEqual(d.querySelector('#lightbox-image').src,initial);d.querySelector('#photo-dialog').dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowLeft',bubbles:true}));assert.equal(d.querySelector('#lightbox-image').src,initial);d.querySelector('#photo-prev').click();assert.match(d.querySelector('#photo-counter').textContent,/10 \/ 10/);d.querySelector('#photo-close').click();assert(!d.querySelector('#photo-dialog').open);assert.equal(d.activeElement,opener);assert(!d.documentElement.classList.contains('album-open'))});
- test('music is hidden when unconfigured, never autoplays, and responds to explicit controls',async t=>{const silent=setup();t.after(silent.close);assert(silent.d.querySelector('#music-toggle').hidden);assert.equal(silent.audioPlays(),0);const env=setup({music:true});t.after(env.close);assert(!env.d.querySelector('#music-toggle').hidden);assert.equal(env.audioPlays(),0);env.d.querySelector('#music-toggle').click();await tick();assert.equal(env.audioPlays(),1);assert.equal(env.d.querySelector('#music-toggle').getAttribute('aria-pressed'),'true');env.d.querySelector('#music-toggle').click();await tick();assert.equal(env.d.querySelector('#music-toggle').getAttribute('aria-pressed'),'false')});
+ test('music is hidden when unconfigured, handles blocked autoplay, and responds to explicit controls',async t=>{const silent=setup();t.after(silent.close);assert(silent.d.querySelector('#music-toggle').hidden);assert.equal(silent.audioPlays(),0);const env=setup({music:true});t.after(env.close);await tick();assert(!env.d.querySelector('#music-toggle').hidden);assert.equal(env.audioPlays(),0);env.d.querySelector('#music-toggle').click();await tick();assert.equal(env.audioPlays(),1);assert.equal(env.d.querySelector('#music-toggle').getAttribute('aria-pressed'),'true');env.d.querySelector('#music-toggle').click();await tick();assert.equal(env.d.querySelector('#music-toggle').getAttribute('aria-pressed'),'false')});
  test('mobile menu, assets, anchor targets, unique IDs, no network submissions and CSS syntax',t=>{
   const env=setup();t.after(env.close);const{d,w}=env;
   d.querySelector('.menu-toggle').click();assert(!d.querySelector('#mobile-nav').hidden);d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape'}));assert(d.querySelector('#mobile-nav').hidden);
@@ -226,8 +227,8 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   assert.equal(d.querySelector('#event-bride-vidaai .timeline-date').textContent,'विवाह के बाद');assert.equal(d.querySelector('#event-bride-vidaai .timeline-time').textContent,'तारों की छाँव में');
   assert.equal(d.querySelector('#event-bride-vidaai .timeline-time').getAttribute('aria-label'),'तारों की छाँव में');assert(!d.querySelector('#event-bride-vidaai [data-calendar]'));assert.equal(w.WeddingApp.calendarText(vidaai),null);
  });
- test('the supplied Sajna MP3 is connected and loops only after an explicit music-button click',async t=>{
-  const env=setup({music:'actual'});t.after(env.close);const{d,w}=env,config=w.WEDDING.music;
+ test('the supplied Sajna MP3 is connected, loops and retains manual controls',async t=>{
+  const env=setup({music:'actual'});t.after(env.close);await tick();const{d,w}=env,config=w.WEDDING.music;
   assert.equal(config.title,'सजना');assert.equal(config.source,'user-provided');assert.equal(config.licence,null,'Do not invent a licence statement');
   assert(fs.existsSync(path.join(root,decodeURIComponent(config.src))));assert(fs.statSync(path.join(root,decodeURIComponent(config.src))).size>1000000);
   const audio=d.querySelector('audio');assert.equal(audio.volume,.4);assert.equal(audio.preload,'none');assert(audio.loop);assert(!d.querySelector('#music-toggle').hidden);assert.equal(env.audioPlays(),0);
@@ -286,4 +287,10 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   assert(!d.querySelector('#story-copy').textContent.includes('जीवन के नए अध्याय'));
   assert.match(d.querySelector('#story-copy').textContent,/सपरिवार आमंत्रित/);
   assert.equal(env.errors.length,0);
+ });
+
+ test('music autoplays when permitted and first invitation tap retries blocked autoplay',async t=>{
+  const allowed=setup({music:true,autoplayAllowed:true});t.after(allowed.close);await tick();assert.equal(allowed.audioPlays(),1);assert.equal(allowed.d.querySelector('#music-toggle').getAttribute('aria-pressed'),'true');
+  const blocked=setup({music:true});t.after(blocked.close);await tick();assert.equal(blocked.audioPlays(),0);blocked.d.querySelector('#water-tap').click();await tick();assert.equal(blocked.audioPlays(),1);
+  blocked.d.querySelector('#music-toggle').click();await tick();assert(blocked.d.querySelector('audio').paused);blocked.d.querySelector('[data-side="bride"]').click();await tick();assert(blocked.d.querySelector('audio').paused);assert.equal(blocked.audioPlays(),1);
  });

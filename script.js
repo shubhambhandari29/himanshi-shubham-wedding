@@ -358,15 +358,33 @@
   setSide(new URL(window.location.href).searchParams.get('side'),{updateUrl:false});
   window.addEventListener('popstate',()=>setSide(new URL(window.location.href).searchParams.get('side'),{updateUrl:false}));
 
-  // User-configured audio: playback only starts on an explicit music-button click.
+  // Try audible autoplay, then retry within a real guest interaction if blocked.
   const audio=$('#background-music'),musicButton=$('#music-toggle');
   if(config.music.src&&config.music.enabled!==false){audio.src=config.music.src;audio.volume=config.music.volume ?? 0.4;musicButton.hidden=false;musicButton.setAttribute('aria-label',`${config.music.title || 'पृष्ठभूमि का संगीत'} चलाएँ`);}
   function updateMusic(){const playing=!audio.paused;musicButton.textContent=playing?'Ⅱ संगीत रोकें':'♫ संगीत चलाएँ';musicButton.setAttribute('aria-pressed',String(playing));musicButton.setAttribute('aria-label',playing?'पृष्ठभूमि का संगीत रोकें':'पृष्ठभूमि का संगीत चलाएँ');}
+  let musicStarted=false, musicChoice=false, musicPending=false;
+  async function startMusicAutomatically(){
+    if(musicButton.hidden||musicChoice||musicStarted||musicPending)return;
+    musicPending=true;
+    try{await audio.play();musicStarted=true;updateMusic();}
+    catch(_){/* Browsers can require a user gesture; keep the manual control available. */}
+    finally{musicPending=false;}
+  }
+  function startMusicOnInteraction(event){
+    if(event.target.closest?.('#music-toggle'))return;
+    if(event.type==='keydown'&&!['Enter',' '].includes(event.key))return;
+    void startMusicAutomatically();
+  }
+  document.addEventListener('click',startMusicOnInteraction);
+  document.addEventListener('keydown',startMusicOnInteraction);
   musicButton.addEventListener('click',async()=>{
+    musicChoice=true;
     try{if(audio.paused)await audio.play();else audio.pause();updateMusic();$('#music-status').textContent=audio.paused?'संगीत रुक गया है।':'संगीत चल रहा है।';}
     catch(_){$('#music-status').textContent='संगीत नहीं चल सका। आप फिर प्रयास कर सकते हैं।';toast('संगीत शुरू नहीं हो सका। फिर प्रयास करने के लिए स्पर्श करें।');}
   });
   audio.addEventListener('play',updateMusic);audio.addEventListener('pause',updateMusic);audio.addEventListener('error',()=>{$('#music-status').textContent='संगीत अभी उपलब्ध नहीं है।';});
+
+  void startMusicAutomatically();
 
   const menu=$('.menu-toggle'),mobileNav=$('#mobile-nav');
   function closeMenu(){mobileNav.hidden=true;menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','विकल्प खोलें');}
