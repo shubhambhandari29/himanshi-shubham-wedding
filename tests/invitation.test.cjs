@@ -11,7 +11,7 @@ const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 function setup({url='http://localhost:5173/',reduced=false,canvas=true,contact=null,music=false,clipboard=false,dpr=1,observeTimeline=false,weddingTime=undefined,autoplayAllowed=false}={}) {
   const errors=[],downloads=[],opened=[],copied=[],animations=[],observers=[];
   const virtualConsole=new VirtualConsole();virtualConsole.on('jsdomError',error=>errors.push(error));
-  const dom=new JSDOM(html,{url,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole});
+  const dom=new JSDOM(html.replace(/<noscript>[\s\S]*?<\/noscript>/g,''),{url,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole});
   const w=dom.window,d=w.document;
   Object.defineProperty(w,'devicePixelRatio',{value:dpr,configurable:true});
   w.matchMedia=()=>({matches:reduced,addEventListener(){}});
@@ -100,7 +100,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
     env.dom.reconfigure({url:'http://localhost:5173/?side=groom'});env.w.dispatchEvent(new env.w.PopStateEvent('popstate'));assert.equal(env.w.WeddingApp.getState().side,'groom');assert.equal(env.errors.length,0);
   }
  });
- test('confirmed bride functions replace earlier unassigned placeholders without assuming groom details',t=>{const env=setup({url:'http://localhost:5173/?side=bride'});t.after(env.close);const{d,w}=env;assert(d.querySelector('.pending-events').hidden);assert.match(d.querySelector('#event-bride-mehendi').textContent,/9 फ़र/);assert.match(d.querySelector('#event-bride-mehendi').textContent,/स्काई गार्डन/);assert.match(d.querySelector('#event-bride-haldi').textContent,/प्रातः 11:00 बजे/);assert.equal(d.querySelectorAll('#celebration-timeline [data-calendar]').length,5);assert.equal(d.querySelectorAll('#celebration-timeline .timeline-event a').length,5);assert.match(w.WeddingApp.calendarText(w.WEDDING.events.find(e=>e.id==='groom-haldi')),/DTSTART:20270210T053000Z/);assert.match(d.querySelector('#family-cards').textContent,/मंजुश्री भंडारी/)});
+ test('confirmed bride functions replace earlier unassigned placeholders without assuming groom details',t=>{const env=setup({url:'http://localhost:5173/?side=bride'});t.after(env.close);const{d,w}=env;assert(d.querySelector('.pending-events').hidden);assert.match(d.querySelector('#event-bride-mehendi').textContent,/9 फ़र/);assert.match(d.querySelector('#event-bride-mehendi').textContent,/साथी वेडिंग पॉइंट/);assert.match(d.querySelector('#event-bride-haldi').textContent,/प्रातः 11:00 बजे/);assert.equal(d.querySelectorAll('#celebration-timeline [data-calendar]').length,5);assert.equal(d.querySelectorAll('#celebration-timeline .timeline-event a').length,5);assert.match(w.WeddingApp.calendarText(w.WEDDING.events.find(e=>e.id==='groom-haldi')),/DTSTART:20270210T053000Z/);assert.match(d.querySelector('#formal-groom-parents').textContent,/मंजुश्री भंडारी/)});
  test('calendar is date-only when wedding time is unconfirmed and exports the actual venue',t=>{const env=setup({weddingTime:null});t.after(env.close);const event=env.w.WEDDING.events.find(e=>e.id==='wedding'),ics=env.w.WeddingApp.calendarText(event);assert.match(ics,/DTSTART;VALUE=DATE:20270210\r\nDTEND;VALUE=DATE:20270211/);assert.match(ics,/LOCATION:शिवप्रिया फार्म्स\\, देहरादून/);assert.match(ics,/आयोजन का सही समय अभी तय नहीं है/);env.d.querySelector('[data-calendar="wedding"]').click();assert.equal(env.downloads.length,1);assert.match(env.d.querySelector('[data-map="wedding"]').href,/Shivpriya%20Farms/)});
  test('countdown uses IST wedding date, has a date-only label and a post-date message',t=>{const env=setup({weddingTime:null});t.after(env.close);env.w.WeddingApp.updateCountdown(new Date('2027-02-09T18:29:00Z'));assert.equal(env.d.querySelector('#minutes').textContent,'01');assert.match(env.d.querySelector('#countdown-note').textContent,/विवाह तिथि के आरंभ तक/);env.w.WeddingApp.updateCountdown(new Date('2027-02-10T00:00:00Z'));assert.equal(env.d.querySelector('#days').textContent,'00');assert.match(env.d.querySelector('#countdown-note').textContent,/शुभारंभ हो चुका है/)});
  test('gallery touch-friendly scrolling, lightbox navigation, close and restored focus',t=>{const env=setup();t.after(env.close);const{d,w}=env;assert.equal(d.querySelectorAll('.photo-memory').length,10);d.querySelector('#gallery-next').click();assert(d.querySelector('#photo-track').scrollLeft>0);const opener=d.querySelector('[data-photo="0"]');opener.focus();opener.click();assert(d.querySelector('#photo-dialog').open);const initial=d.querySelector('#lightbox-image').src;d.querySelector('#photo-next').click();assert.notEqual(d.querySelector('#lightbox-image').src,initial);d.querySelector('#photo-dialog').dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowLeft',bubbles:true}));assert.equal(d.querySelector('#lightbox-image').src,initial);d.querySelector('#photo-prev').click();assert.match(d.querySelector('#photo-counter').textContent,/10 \/ 10/);d.querySelector('#photo-close').click();assert(!d.querySelector('#photo-dialog').open);assert.equal(d.activeElement,opener);assert(!d.documentElement.classList.contains('album-open'))});
@@ -139,7 +139,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
     w.WeddingApp.setSide(side);const rows=[...d.querySelectorAll('.timeline-event')];
     assert.equal(rows.length,6);assert.deepEqual(rows.map(row=>row.dataset.position),rows.map((_,i)=>i%2?'art-right':'art-left'));
     assert.equal(d.querySelectorAll('.timeline-track').length,1);assert.equal(d.querySelectorAll('.timeline-marker svg').length,rows.length);assert.equal(d.querySelectorAll('.timeline-scene img').length,rows.length);assert.equal(d.querySelectorAll('#event-wedding').length,1);
-    assert(rows.every(row=>row.querySelector('.timeline-date')&&row.querySelector('.timeline-time')&&row.querySelector('.timeline-hindi')&&row.querySelector('.timeline-description')&&row.querySelector('.timeline-venue')));
+    assert(rows.every(row=>row.querySelector('.timeline-date')&&row.querySelector('.timeline-time')&&row.querySelector('.timeline-venue')));
     for(const row of rows){const event=w.WEDDING.events.find(e=>'event-'+e.id===row.id);assert.equal(Boolean(row.querySelector('[data-calendar]')),Boolean(event.date&&event.time));}
   }
  });
@@ -190,7 +190,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
  test('translation preserves the latest confirmed event facts and machine-readable calendar dates',t=>{
   const env=setup();t.after(env.close);const{w}=env,events=w.WEDDING.events;
   const wedding=events.find(e=>e.id==='wedding');assert.equal(wedding.date,'2027-02-10');assert.equal(wedding.time,'20:00');assert.equal(wedding.venue.mapsQuery,'Shivpriya Farms, Dehradun');assert.equal(wedding.venue.name,'शिवप्रिया फार्म्स');
-  assert.equal(events.find(e=>e.id==='bride-keertan').date,'2027-02-08');assert.equal(events.find(e=>e.id==='bride-mehendi').venue.mapsQuery,'Sky Garden Wedding Point, Jogiwala, Dehradun');assert.equal(events.find(e=>e.id==='bride-haldi').time,'11:00');
+  assert.equal(events.find(e=>e.id==='bride-keertan').date,'2027-02-08');assert.equal(events.find(e=>e.id==='bride-mehendi').venue.mapsUrl,'https://share.google/F47hnI9tc7TaGotYH');assert.equal(events.find(e=>e.id==='bride-haldi').time,'11:00');
   for(const event of events.filter(e=>e.side==='groom')){assert(event.date);assert.equal(event.venue,w.WEDDING.groomHomeVenue)}
   const ics=w.WeddingApp.calendarText(wedding);assert.match(ics,/SUMMARY:हिमांशी संग शुभम — शुभ विवाह/);assert.match(ics,/DTSTART:20270210T143000Z/);assert.match(ics,/LOCATION:शिवप्रिया फार्म्स\\, देहरादून/);
  });
@@ -214,12 +214,12 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
  test('the full home address and both wedding-point map links are shown without stale locations',t=>{
   const env=setup({url:'http://localhost:5173/?side=bride'});t.after(env.close);const{d}=env;
   for(const id of ['bride-satsang','bride-keertan','bride-haldi']){
-    assert.match(d.querySelector('#event-'+id+' .timeline-venue').textContent,/गली नंबर ११, इंद्रप्रस्थ कॉलोनी, ६ नंबर पुलिया के पास/);
+    assert.equal(d.querySelector('#event-'+id+' .timeline-venue').textContent,'हिमांशी का निवास, जोगीवाला');
     const query=new URL(d.querySelector('#event-'+id+' a').href).searchParams.get('query');assert.equal(query,'Lane No 11, Indraprastha Colony, near 6 Number Puliya, Jogiwala, Dehradun');
   }
-  assert.equal(new URL(d.querySelector('#event-bride-mehendi a').href).searchParams.get('query'),'Sky Garden Wedding Point, Jogiwala, Dehradun');
+  assert.equal(d.querySelector('#event-bride-mehendi a').href,'https://share.google/F47hnI9tc7TaGotYH');
   assert.equal(new URL(d.querySelector('#event-wedding a').href).searchParams.get('query'),'Shivpriya Farms, Dehradun');
-  assert.match(d.querySelector('#additional-venues').textContent,/गली नंबर ११/);assert.match(d.querySelector('#additional-venues').textContent,/स्काई गार्डन/);
+  assert.match(d.querySelector('#additional-venues').textContent,/गली नंबर 11/);assert.match(d.querySelector('#additional-venues').textContent,/साथी वेडिंग पॉइंट/);
  });
  test('vidaai stays after the wedding with its poetic timing and no invented date or calendar file',t=>{
   const env=setup({url:'http://localhost:5173/?side=bride'});t.after(env.close);const{d,w}=env,vidaai=w.WEDDING.events.find(event=>event.id==='bride-vidaai');
@@ -257,12 +257,12 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   assert.match(d.querySelector('.intro-welcome h1').textContent,/हिमांशी/);assert.match(d.querySelector('.intro-welcome h1').textContent,/शुभम/);
   assert.match(fs.readFileSync(path.join(root,'style.css'),'utf8'),/Cormorant Garamond/);
  });
- test('verified parents appear directly below the correct bride and groom and in the family section',t=>{
+ test('verified parents remain directly below the correct bride and groom',t=>{
   const env=setup();t.after(env.close);const{d,w}=env;
   const bride=d.querySelector('.formal-person[data-person=bride]'),groom=d.querySelector('.formal-person[data-person=groom]');
   assert.equal(bride.querySelector('.formal-name').textContent,'हिमांशी');assert.equal(bride.querySelector('.formal-relation').textContent,'सुपुत्री');assert.match(bride.querySelector('.formal-parents').textContent,/श्रीमती वीना राणा/);assert.match(bride.querySelector('.formal-parents').textContent,/श्री राजेंद्र सिंह राणा/);
   assert.equal(groom.querySelector('.formal-name').textContent,'शुभम');assert.equal(groom.querySelector('.formal-relation').textContent,'सुपुत्र');assert.match(groom.querySelector('.formal-parents').textContent,/श्रीमती मंजुश्री भंडारी/);assert.match(groom.querySelector('.formal-parents').textContent,/श्री रविंद्र सिंह भंडारी/);
-  for(const family of Object.values(w.WEDDING.families))for(const parent of family.members)assert(d.querySelector('#family-cards').textContent.includes(parent.name));
+  for(const family of Object.values(w.WEDDING.families))for(const parent of family.members)assert(d.querySelector('.formal-invite').textContent.includes(parent.name));
  });
  test('date and time copy uses 0–9 digits, omits timezone labels, and retains correct UTC calendar times',t=>{
   const env=setup({url:'http://localhost:5173/?side=bride'});t.after(env.close);const{d,w}=env;
@@ -285,7 +285,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   assert(!d.body.textContent.includes('कैसे पहुँचें'));
   assert.deepEqual([...d.querySelectorAll('.timeline-event:not(#event-wedding) h3')].map(e=>e.textContent),['सत्संग','कीर्तन','मेहंदी एवं कॉकटेल','हल्दी','विदाई']);
   assert(!d.querySelector('#story-copy').textContent.includes('जीवन के नए अध्याय'));
-  assert.match(d.querySelector('#story-copy').textContent,/सपरिवार आमंत्रित/);
+  assert.equal(d.querySelector('#story-copy').textContent,'कुछ पुराने पल, कुछ नई यादें—और अब एक नया सफ़र।');
   assert.equal(env.errors.length,0);
  });
 
@@ -333,4 +333,60 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   const logos=env.d.querySelectorAll('.couple-logo,.compact-logo');assert.equal(logos.length,6);
   assert([...logos].every(img=>/assets\/logo-(emblem|monogram)\.webp$/.test(img.getAttribute('src'))));
   assert(!env.d.querySelector('img[src="assets/logo.png"]'));
+ });
+
+ test('polished family timelines render each title and Vidaai timing once without redundant subtitles',t=>{
+  const env=setup();t.after(env.close);const{d,w}=env;
+  for(const side of ['groom','bride']){
+    w.WeddingApp.setSide(side);assert(!d.querySelector('.timeline-hindi,.timeline-family-note'));
+    for(const row of d.querySelectorAll('.timeline-event')){
+      assert.equal(row.querySelectorAll('h3').length,1);
+      const event=w.WEDDING.events.find(e=>'event-'+e.id===row.id);
+      if(['haldi','keertan','satsang','wedding'].includes(event.type))assert(!row.querySelector('.timeline-description'));
+    }
+  }
+  assert.equal((d.querySelector('#event-bride-vidaai').textContent.match(/तारों की छाँव में/g)||[]).length,1);
+  assert(d.querySelector('#event-bride-mehendi .timeline-description'));
+  const e=w.WEDDING.events.find(e=>e.id==='bride-mehendi');e.timelineDescription=e.title+'।';w.WeddingApp.setSide('bride');assert(!d.querySelector('#event-bride-mehendi .timeline-description'));
+ });
+ test('scratch completion updates instructions, hides redundant control and moves keyboard focus to calendar',t=>{
+  const env=setup();t.after(env.close);const{d,w}=env,button=d.querySelector('#reveal-date');
+  assert.equal(d.querySelector('#scratch-hint').textContent,'उँगली फेरकर विवाह तिथि देखें');assert.equal(button.textContent.trim(),'विवाह तिथि देखें');assert.equal(d.querySelector('#skip-intro').textContent.trim(),'सीधे निमंत्रण देखें');
+  button.focus();button.click();assert(button.hidden);assert(button.disabled);assert(d.querySelector('#scratch-hint').hidden);assert(!d.querySelector('#date-details').hidden);assert.equal(d.querySelector('.date-remember').textContent,'तिथि याद रखिए');assert.equal(d.activeElement,d.querySelector('#date-details [data-calendar]'));
+  assert.match(d.querySelector('#scratch-status').textContent,/3 में से 3/);assert(d.querySelector('#scratch-status').classList.contains('sr-only'));assert.equal(w.WeddingApp.getState().scratched.filter(Boolean).length,3);
+ });
+ test('Sathi share link and full home addresses are retained in venue summaries and calendar exports',t=>{
+  const env=setup({url:'http://localhost:5173/?side=bride'});t.after(env.close);const{d,w}=env;
+  const brideCard=d.querySelector('.additional-venue[data-owner="bride"]'),mehendi=w.WEDDING.events.find(e=>e.id==='bride-mehendi');
+  assert.match(brideCard.textContent,/हिमांशी का निवास/);assert.match(brideCard.textContent,/गली नंबर 11, इंद्रप्रस्थ कॉलोनी, 6 नंबर पुलिया के पास/);
+  const sathi=[...d.querySelectorAll('.additional-venue')].find(e=>e.textContent.includes('साथी वेडिंग पॉइंट'));assert.match(sathi.textContent,/हिमांशी की मेहंदी एवं कॉकटेल/);assert.equal(sathi.querySelector('a').href,mehendi.venue.mapsUrl);assert(!d.body.textContent.includes('स्काई गार्डन'));
+  assert.equal(d.querySelector('#event-bride-haldi .timeline-venue').textContent,'हिमांशी का निवास, जोगीवाला');assert(w.WeddingApp.calendarText(w.WEDDING.events.find(e=>e.id==='bride-haldi')).includes('इंद्रप्रस्थ कॉलोनी'));assert(w.WeddingApp.calendarText(mehendi).includes('साथी वेडिंग पॉइंट'));
+  for(const side of ['groom','bride']){w.WeddingApp.setSide(side);assert(!/[०-९]/.test(d.body.textContent));}
+  assert.match(d.querySelector('#event-bride-keertan .timeline-time').textContent,/दोपहर 2:00 बजे/);
+ });
+ test('main section order is practical and repeated family and crest sections are removed',t=>{
+  const env=setup();t.after(env.close);const{d,w}=env;
+  assert.deepEqual([...d.querySelectorAll('main > section')].map(e=>e.id||e.classList[0]),['the-date','formal-section','celebrations','our-story','countdown-section','location','contacts','closing-section']);
+  assert(!d.querySelector('.family-section'));assert.equal(d.querySelectorAll('img[src="assets/logo-emblem.webp"]').length,1);assert(d.querySelector('.closing-monogram img[src="assets/logo-monogram.webp"]'));
+  for(const f of Object.values(w.WEDDING.families))for(const parent of f.members)assert.equal(d.querySelector('main').textContent.split(parent.name).length-1,1);
+  assert.equal(d.querySelector('#story-copy').textContent,'कुछ पुराने पल, कुछ नई यादें—और अब एक नया सफ़र।');
+ });
+ test('functional controls use accessible currentColor SVGs across all family views and playback states',async t=>{
+  const env=setup({music:true});t.after(env.close);await tick();const{d,w}=env;
+  for(const side of ['groom','bride']){
+    w.WeddingApp.setSide(side);
+    for(const selector of ['#skip-intro','#reveal-date','#gallery-prev','#gallery-next','#photo-prev','#photo-next','#photo-close','#music-toggle','.closing-section a','#location [data-map]','.menu-toggle'])assert(d.querySelector(selector+' svg.ui-icon'),selector);
+    for(const control of d.querySelectorAll('.timeline-actions>a,.timeline-actions>button,.photo-open'))assert(control.querySelector('svg.ui-icon'));
+    for(const svg of d.querySelectorAll('svg.ui-icon')){assert.equal(svg.getAttribute('stroke'),'currentColor');assert.equal(svg.getAttribute('aria-hidden'),'true');assert.equal(svg.getAttribute('focusable'),'false');assert.equal(svg.namespaceURI,'http://www.w3.org/2000/svg');}
+    for(const e of d.querySelectorAll('button,.timeline-actions a,.text-button,.scroll-cue'))assert(!/[↗↘↑←→♫Ⅱ☰×⌄]/.test(e.textContent),e.textContent);
+  }
+  d.querySelector('#music-toggle').click();await tick();assert(d.querySelector('#music-toggle svg[data-icon="pause"]'));d.querySelector('#music-toggle').click();await tick();assert(d.querySelector('#music-toggle svg[data-icon="play"]'));
+  d.querySelector('.menu-toggle').click();assert(d.querySelector('.menu-toggle svg[data-icon="close"]'));d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));assert(d.querySelector('.menu-toggle svg[data-icon="menu"]'));assert.equal(env.errors.length,0);
+ });
+ test('contact cards stay hidden until verified names and numbers exist; call and WhatsApp links never submit data',t=>{
+  const env=setup();t.after(env.close);const{d,w}=env;
+  assert(d.querySelector('#contacts').hidden);assert([...d.querySelectorAll('[data-contact-nav]')].every(e=>e.hidden));assert.equal(d.querySelectorAll('.contact-card').length,0);
+  w.WEDDING.families.groom.contact={name:'परीक्षण संपर्क',phone:null};w.WeddingApp.renderContacts();assert(d.querySelector('#contacts').hidden);
+  w.WEDDING.families.groom.contact.phone='+919999999999';w.WEDDING.families.bride.contact={name:'परीक्षण संपर्क',phone:'918888888888'};w.WeddingApp.renderContacts();assert(!d.querySelector('#contacts').hidden);assert.equal(d.querySelectorAll('.contact-card').length,2);assert([...d.querySelectorAll('[data-contact-nav]')].every(e=>!e.hidden));
+  assert.equal(d.querySelector('.contact-actions a').href,'tel:+919999999999');assert.equal(d.querySelector('.contact-actions a:nth-child(2)').href,'https://wa.me/919999999999');assert.equal(env.opened.length,0);assert(!d.querySelector('form'));assert.equal(env.errors.length,0);
  });

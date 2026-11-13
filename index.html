@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#DFEBE2">
-  <meta name="description" content="हिमांशी संग शुभम के शुभ विवाह में आपका स्नेहिल आमंत्रण। 10 फ़रवरी 2027, शिवप्रिया फार्म्स, देहरादून। पारिवारिक समारोहों की जानकारी देखें और अपनी उपस्थिति बताएँ।">
+  <meta name="description" content="हिमांशी संग शुभम के शुभ विवाह में आपका स्नेहिल आमंत्रण। 10 फ़रवरी 2027, शिवप्रिया फार्म्स, देहरादून। दोनों परिवारों के समारोहों की जानकारी देखें।">
   <title>हिमांशी संग शुभम · शुभ विवाह का स्नेहिल आमंत्रण</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+Devanagari:wght@400;500;600&family=Tiro+Devanagari+Hindi:ital@0;1&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="preload" href="assets/lotus-botanical.webp" as="image">
   <link rel="preload" href="assets/flower-boat.webp" as="image">
-  <link rel="stylesheet" href="style.css?v=transparent-logos-1">
-  <script src="content.js?v=transparent-logos-1" defer></script>
-  <script src="script.js?v=transparent-logos-1" defer></script>
+  <link rel="stylesheet" href="style.css?v=invitation-polish-1">
+  <script src="content.js?v=invitation-polish-1" defer></script>
+  <script src="script.js?v=invitation-polish-1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">निमंत्रण पर जाएँ</a>
@@ -24,7 +24,7 @@
     <img class="lotus-layer lotus-right" src="assets/lotus-botanical.webp" alt="" width="1024" height="1536">
     <img class="lotus-layer lotus-bottom" src="assets/lotus-botanical.webp" alt="" width="1024" height="1536">
     <div class="opening-mark" aria-hidden="true"><img class="couple-logo" src="assets/logo-monogram.webp" alt="हिमांशी और शुभम का लोगो" width="1254" height="1254"></div>
-    <button id="skip-intro" class="skip-intro" type="button">भूमिका छोड़ें <span>↘</span></button>
+    <button id="skip-intro" class="skip-intro" type="button">सीधे निमंत्रण देखें <span data-icon="skip"></span></button>
     <div class="intro-initial">
       <p class="overline">शुभ विवाह</p>
       <p class="opening-script">स्नेहिल आमंत्रण</p>
@@ -43,16 +43,16 @@
       <div class="boat-bob"><span class="boat-water-ring"></span><img src="assets/flower-boat.webp" alt="" width="1024" height="1536"></div>
     </div>
     <div class="drifting-petals" aria-hidden="true"><i></i><i></i><i></i></div>
-    <button class="water-tap" id="water-tap" type="button" aria-label="हिमांशी संग शुभम का निमंत्रण खोलने के लिए जल पर स्पर्श करें"><span class="tap-cue">जल पर स्पर्श करें <i>◌</i></span></button>
-    <a class="scroll-cue" href="#invitation" tabindex="-1">नीचे देखें <span>⌄</span></a>
+    <button class="water-tap" id="water-tap" type="button" aria-label="हिमांशी संग शुभम का निमंत्रण खोलने के लिए जल पर स्पर्श करें"><span class="tap-cue">जल पर स्पर्श करें <i data-icon="tap"></i></span></button>
+    <a class="scroll-cue" href="#invitation" tabindex="-1">नीचे देखें <span data-icon="down"></span></a>
     <p class="intro-status sr-only" role="status" aria-live="polite"></p>
   </section>
 
   <header class="site-header">
     <a class="brand" href="#home" aria-label="हिमांशी संग शुभम, आरंभ पर लौटें"><img class="couple-logo" src="assets/logo-monogram.webp" alt="हिमांशी और शुभम का लोगो" width="1254" height="1254"></a>
-    <nav aria-label="मुख्य विकल्प"><a href="#the-date">विवाह तिथि</a><a href="#celebrations">समारोह</a><a href="#our-story">तस्वीरें</a><a href="#location">विवाह स्थल</a></nav>
-    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="विकल्प खोलें">☰</button>
-    <nav id="mobile-nav" class="mobile-nav" aria-label="फ़ोन के लिए विकल्प" hidden><a href="#the-date">विवाह तिथि</a><a href="#celebrations">समारोह</a><a href="#our-story">तस्वीरें</a><a href="#location">विवाह स्थल</a></nav>
+    <nav aria-label="मुख्य विकल्प"><a href="#the-date">विवाह तिथि</a><a href="#celebrations">समारोह</a><a href="#our-story">तस्वीरें</a><a href="#location">विवाह स्थल</a><a href="#contacts" data-contact-nav hidden>संपर्क</a></nav>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="विकल्प खोलें"><span data-icon="menu"></span></button>
+    <nav id="mobile-nav" class="mobile-nav" aria-label="फ़ोन के लिए विकल्प" hidden><a href="#the-date">विवाह तिथि</a><a href="#celebrations">समारोह</a><a href="#our-story">तस्वीरें</a><a href="#location">विवाह स्थल</a><a href="#contacts" data-contact-nav hidden>संपर्क</a></nav>
   </header>
 
   <main id="invitation">
@@ -60,18 +60,19 @@
       <p class="overline">एक दिन, जिसकी याद रहेगी जीवन भर</p>
       <h2 id="date-heading">विवाह तिथि</h2>
       <div class="floral-divider" aria-hidden="true"><span>❧</span><i>✿</i><span>❧</span></div>
-      <p class="scratch-hint">तिथि जानने के लिए सुनहरी परत हटाएँ <span>✧</span></p>
+      <p class="scratch-hint" id="scratch-hint">उँगली फेरकर विवाह तिथि देखें</p>
       <div class="scratch-grid" aria-label="विवाह तिथि: 10 फ़रवरी 2027">
         <div class="scratch-item"><div class="scratch-card" data-scratch="0"><span class="date-value" id="date-day">10</span><canvas aria-hidden="true"></canvas><span class="scratch-sheen" aria-hidden="true"></span></div><span class="date-label">दिन</span></div>
         <div class="scratch-item"><div class="scratch-card" data-scratch="1"><span class="date-value date-month" id="date-month">फ़रवरी</span><canvas aria-hidden="true"></canvas><span class="scratch-sheen" aria-hidden="true"></span></div><span class="date-label">माह</span></div>
         <div class="scratch-item"><div class="scratch-card" data-scratch="2"><span class="date-value" id="date-year">2027</span><canvas aria-hidden="true"></canvas><span class="scratch-sheen" aria-hidden="true"></span></div><span class="date-label">वर्ष</span></div>
       </div>
-      <div class="scratch-access"><button id="reveal-date" type="button" class="text-button">बिना परत हटाए तिथि देखें ↗</button><span id="scratch-status" class="sr-only" role="status" aria-live="polite">3 में से 0 तिथिपत्र खुले हैं।</span></div>
+      <div class="scratch-access"><button id="reveal-date" type="button" class="text-button">विवाह तिथि देखें <span data-icon="reveal"></span></button><span id="scratch-status" class="sr-only" role="status" aria-live="polite">3 में से 0 तिथिपत्र खुले हैं।</span></div>
       <div class="date-details" id="date-details" hidden>
+        <p class="date-remember" tabindex="-1">तिथि याद रखिए</p>
         <p class="wedding-weekday">बुधवार, 10 फ़रवरी 2027</p>
         <p class="date-time">रात्रि 8:00 बजे</p>
         <p class="date-venue">शिवप्रिया फार्म्स, देहरादून</p>
-        <button class="pill" type="button" data-calendar="wedding">कैलेंडर में जोड़ें <span>↗</span></button>
+        <button class="pill" type="button" data-calendar="wedding">कैलेंडर में जोड़ें <span data-icon="calendar"></span></button>
       </div>
     </section>
 
@@ -103,24 +104,24 @@
       </div>
     </section>
 
-    <section class="story-section section" id="our-story" aria-labelledby="story-heading">
-      <p class="overline">हमारी तस्वीरें</p><h2 id="story-heading">हमारी कुछ यादें</h2>
-      <div class="floral-divider" aria-hidden="true"><span>❧</span><i>✿</i><span>❧</span></div>
-      <div class="story-copy" id="story-copy"></div>
-      <div class="gallery-shell"><div class="photo-track" id="photo-track" aria-label="हमारी यादें, आगे देखने के लिए उँगली से सरकाएँ" tabindex="0"></div></div>
-      <div class="gallery-controls"><button id="gallery-prev" type="button" class="round-button" aria-label="पिछली यादें">←</button><p>हमारी प्यारी यादों में आगे बढ़ें <span>तस्वीर को बड़ा देखने के लिए उस पर स्पर्श करें।</span></p><button id="gallery-next" type="button" class="round-button" aria-label="अगली यादें">→</button></div>
-    </section>
-
     <section class="celebrations-section section" id="celebrations" aria-labelledby="celebrations-heading">
       <img class="section-lotus" src="assets/lotus-botanical.webp" alt="" loading="lazy" width="1024" height="1536">
-      <p class="overline">दो परिवार · जीवन भर का साथ</p><h2 id="celebrations-heading">हमारे समारोह</h2>
+      <h2 id="celebrations-heading">हमारे समारोह</h2>
       <div class="floral-divider" aria-hidden="true"><span>❧</span><i>✿</i><span>❧</span></div>
-      <p class="section-intro">दोनों परिवारों के अपने-अपने उत्सव।<br>और एक विवाह, जो हमें एक कर देगा।</p>
+      <p class="section-intro">परिवार चुनकर समारोहों की जानकारी देखें।</p>
       <div class="side-selector" role="group" aria-label="परिवार के समारोह चुनें"><button type="button" data-side="groom" aria-pressed="true">शुभम के समारोह</button><button type="button" data-side="bride" aria-pressed="false">हिमांशी के समारोह</button></div>
       <p class="side-status" id="side-status" role="status" aria-live="polite"></p>
       <div class="celebration-timeline illustrated-timeline" id="celebration-timeline" role="list" aria-label="पारिवारिक समारोह और दोनों परिवारों का साझा विवाह"></div>
       <div class="timeline-ending" aria-hidden="true"><img src="assets/lotus-botanical.webp" alt="" loading="lazy" width="1024" height="1536"><span>साथ, सदा के लिए।</span></div>
       <details class="pending-events"><summary>अब तक मिली तिथियाँ एवं आयोजन स्थल <span>+</span></summary><div><p>पहले साझा की गई इन जानकारियों का संबंध किस परिवार से है, इसकी पुष्टि बाकी है। पुष्टि होने पर ये संबंधित परिवार के समारोहों में दिखाई देंगी।</p><div id="unassigned-events"></div></div></details>
+    </section>
+
+    <section class="story-section section" id="our-story" aria-labelledby="story-heading">
+      <p class="overline">हमारी तस्वीरें</p><h2 id="story-heading">हमारी कुछ यादें</h2>
+      <div class="floral-divider" aria-hidden="true"><span>❧</span><i>✿</i><span>❧</span></div>
+      <div class="story-copy" id="story-copy"></div>
+      <div class="gallery-shell"><div class="photo-track" id="photo-track" aria-label="हमारी यादें, आगे देखने के लिए उँगली से सरकाएँ" tabindex="0"></div></div>
+      <div class="gallery-controls"><button id="gallery-prev" type="button" class="round-button" aria-label="पिछली यादें"><span data-icon="left"></span></button><p>तस्वीर को बड़ा देखने के लिए उस पर स्पर्श करें।</p><button id="gallery-next" type="button" class="round-button" aria-label="अगली यादें"><span data-icon="right"></span></button></div>
     </section>
 
     <section class="countdown-section section" aria-labelledby="countdown-heading"><p class="overline">विवाह की उलटी गिनती</p><h2 id="countdown-heading">शुभ विवाह तक</h2><div class="countdown" aria-label="विवाह तिथि तक शेष समय"><div><strong id="days">—</strong><span>दिन</span></div><i>:</i><div><strong id="hours">—</strong><span>घंटे</span></div><i>:</i><div><strong id="minutes">—</strong><span>मिनट</span></div><i>:</i><div><strong id="seconds">—</strong><span>सेकंड</span></div></div><p id="countdown-note">शुभ विवाह तक · 10 फ़रवरी 2027 · रात्रि 8:00 बजे</p></section>
@@ -133,21 +134,23 @@
           <h3 id="wedding-venue-heading">शिवप्रिया फार्म्स</h3>
           <p id="wedding-venue-city">देहरादून, उत्तराखंड</p>
           <p class="venue-schedule" id="wedding-venue-schedule">10 फ़रवरी 2027<br>रात्रि 8:00 बजे</p>
-          <a class="pill" data-map="wedding" target="_blank" rel="noopener noreferrer">गूगल मानचित्र में देखें <span>↗</span></a>
+          <a class="pill" data-map="wedding" target="_blank" rel="noopener noreferrer">गूगल मानचित्र में देखें <span data-icon="map"></span></a>
         </div>
       </div>
       <div class="additional-venues" id="additional-venues"></div>
     </section>
 
-    <section class="family-section section" aria-labelledby="family-heading"><p class="overline">स्नेह और आशीर्वाद के साथ</p><h2 id="family-heading">हमारे परिवार</h2><div class="floral-divider" aria-hidden="true"><span>❧</span><i>✿</i><span>❧</span></div><p class="section-intro">दो घरों से, ढेर सारे स्नेह के साथ।<br>आपके स्वागत की प्रतीक्षा में।</p><div class="family-cards" id="family-cards"></div></section>
+    <section class="contact-section section" id="contacts" aria-labelledby="contacts-heading" hidden>
+      <h2 id="contacts-heading">संपर्क करें</h2>
+      <div class="contact-cards" id="contact-cards"></div>
+    </section>
 
-
-    <section class="closing-section section"><div class="floral-divider" aria-hidden="true"><span>❧</span><i>✿</i><span>❧</span></div><p>दोनों परिवारों की ओर से सप्रेम</p><h2>हिमांशी <em>संग</em> शुभम</h2><p class="overline">10 फ़रवरी 2027 · देहरादून</p><a class="text-button" href="#home">आरंभ पर लौटें ↑</a><div class="crest" aria-hidden="true"><img class="couple-logo" src="assets/logo-emblem.webp" alt="हिमांशी और शुभम का लोगो" width="1254" height="1254"></div></section>
+    <section class="closing-section section"><div class="floral-divider" aria-hidden="true"><span>❧</span><i>✿</i><span>❧</span></div><p>दोनों परिवारों की ओर से सप्रेम</p><h2>हिमांशी <em>संग</em> शुभम</h2><p class="overline">10 फ़रवरी 2027 · देहरादून</p><a class="text-button" href="#home">आरंभ पर लौटें <span data-icon="up"></span></a><div class="closing-monogram" aria-hidden="true"><img class="compact-logo" src="assets/logo-monogram.webp" alt="हिमांशी और शुभम का लोगो" width="96" height="96"></div></section>
   </main>
   <footer>अपनों के लिए, स्नेह से सँजोया गया। <span class="footer-brand"><img class="compact-logo" src="assets/logo-monogram.webp" alt="हिमांशी और शुभम का लोगो" width="72" height="72">2027</span></footer>
-  <button id="music-toggle" class="music-toggle" type="button" aria-pressed="false" hidden>♫ संगीत चलाएँ</button><audio id="background-music" loop preload="none"></audio><span id="music-status" class="sr-only" role="status" aria-live="polite"></span>
+  <button id="music-toggle" class="music-toggle" type="button" aria-pressed="false" hidden><span data-icon="play"></span> संगीत चलाएँ</button><audio id="background-music" loop preload="none"></audio><span id="music-status" class="sr-only" role="status" aria-live="polite"></span>
   <div class="toast" role="status" aria-live="polite"></div>
-  <dialog id="photo-dialog" class="photo-dialog" aria-label="हमारी तस्वीरें"><div class="lightbox-toolbar"><span class="album-brand"><img class="compact-logo" src="assets/logo-monogram.webp" alt="हिमांशी और शुभम का लोगो" width="96" height="96"><small>हमारी तस्वीरें</small></span><button id="photo-close" class="round-button" type="button" aria-label="तस्वीर बंद करें">×</button></div><div class="lightbox-stage"><button id="photo-prev" class="round-button" type="button" aria-label="पिछली तस्वीर">←</button><img id="lightbox-image" alt=""><button id="photo-next" class="round-button" type="button" aria-label="अगली तस्वीर">→</button></div><div class="lightbox-caption"><p id="photo-caption"></p><span id="photo-counter" aria-live="polite"></span></div></dialog>
-  <noscript><style>.intro-initial,.water-tap,#skip-intro,.scratch-card canvas,.scratch-sheen{display:none}.intro-welcome{opacity:1;transform:none}.boat-route{transform:translate(-50%,-50%) rotate(0)}.scroll-cue{opacity:1;pointer-events:auto}#date-details{display:block!important}</style><div class="noscript-note">आप सादर आमंत्रित हैं: 10 फ़रवरी 2027, शिवप्रिया फार्म्स, देहरादून। शुभ विवाह रात्रि 8:00 बजे है। दोनों परिवारों के समारोहों की जानकारी मुख्य निमंत्रण में देखें। तस्वीरें देखने के लिए अपने ब्राउज़र में जावास्क्रिप्ट चालू करें।</div></noscript>
+  <dialog id="photo-dialog" class="photo-dialog" aria-label="हमारी तस्वीरें"><div class="lightbox-toolbar"><span class="album-brand"><img class="compact-logo" src="assets/logo-monogram.webp" alt="हिमांशी और शुभम का लोगो" width="96" height="96"><small>हमारी तस्वीरें</small></span><button id="photo-close" class="round-button" type="button" aria-label="तस्वीर बंद करें"><span data-icon="close"></span></button></div><div class="lightbox-stage"><button id="photo-prev" class="round-button" type="button" aria-label="पिछली तस्वीर"><span data-icon="left"></span></button><img id="lightbox-image" alt=""><button id="photo-next" class="round-button" type="button" aria-label="अगली तस्वीर"><span data-icon="right"></span></button></div><div class="lightbox-caption"><p id="photo-caption"></p><span id="photo-counter" aria-live="polite"></span></div></dialog>
+  <noscript><style>.intro-initial,.water-tap,#skip-intro,.scratch-card canvas,.scratch-sheen,#scratch-hint,#reveal-date{display:none}.intro-welcome{opacity:1;transform:none}.boat-route{transform:translate(-50%,-50%) rotate(0)}.scroll-cue{opacity:1;pointer-events:auto}#date-details{display:block!important}</style><div class="noscript-note">आप सादर आमंत्रित हैं: 10 फ़रवरी 2027, शिवप्रिया फार्म्स, देहरादून। शुभ विवाह रात्रि 8:00 बजे है। दोनों परिवारों के समारोहों की जानकारी मुख्य निमंत्रण में देखें। तस्वीरें देखने के लिए अपने ब्राउज़र में जावास्क्रिप्ट चालू करें।</div></noscript>
 </body>
 </html>

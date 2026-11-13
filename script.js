@@ -12,6 +12,22 @@
   const $$ = selector => [...document.querySelectorAll(selector)];
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const escapeHTML = text => String(text ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  const iconPaths = {
+    left:'<path d="m14 6-6 6 6 6M8 12h12"/>',right:'<path d="m10 6 6 6-6 6M4 12h12"/>',
+    up:'<path d="m6 14 6-6 6 6M12 8v12"/>',down:'<path d="m6 9 6 6 6-6"/>',
+    external:'<path d="M14 4h6v6M20 4l-9 9M10 4H4v16h16v-6"/>',
+    map:'<path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+    calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-13 5h2m4 0h2"/>',
+    enlarge:'<path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6"/>',
+    play:'<path d="m8 5 11 7-11 7Z"/>',pause:'<path d="M8 5v14m8-14v14" stroke-width="3"/>',
+    close:'<path d="m6 6 12 12M6 18 18 6"/>',menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+    skip:'<path d="m8 5 8 7-8 7M20 5v14"/>',tap:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/>',
+    reveal:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
+    phone:'<path d="m6 3 4 5-3 3c2 3 3 4 6 6l3-3 5 4c-1 3-3 4-5 3C9 19 5 15 3 8 2 6 3 4 6 3Z"/>',
+    message:'<path d="M21 11a9 9 0 0 1-13 8l-5 2 1-5a9 9 0 1 1 17-5Z"/><path d="M8 11h8m-8 4h5"/>'
+  };
+  const icon = name => `<svg class="ui-icon" data-icon="${name}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${iconPaths[name] || iconPaths.external}</svg>`;
+  $$('[data-icon]').forEach(slot => { slot.innerHTML=icon(slot.dataset.icon); });
   const photoURL = photo => `assets/${encodeURIComponent(photo.file)}`;
   const wedding = config.events.find(event => event.id === 'wedding');
   const dateFormat = new Intl.DateTimeFormat(locale, {day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Kolkata'});
@@ -19,11 +35,12 @@
   const dateLabel = event => event.date ? dateFormat.format(dateOnly(event.date)) : event.dateLabel || 'तिथि शीघ्र बताई जाएगी';
   const clockLabel = event => {
     const [hours,minutes] = event.time.split(':').map(Number);
-    const period = hours < 12 ? 'प्रातः' : hours < 16 ? 'अपराह्न' : hours < 20 ? 'सायं' : 'रात्रि';
+    const period = hours < 12 ? 'प्रातः' : hours < 16 ? 'दोपहर' : hours < 20 ? 'सायं' : 'रात्रि';
     return `${period} ${formatDateNumber(hours % 12 || 12)}:${padDateNumber(minutes)} बजे`;
   };
   const timeLabel = event => event.time ? clockLabel(event) : event.timeLabel || 'समय शीघ्र बताया जाएगा';
   const venueLabel = event => event.venue ? [event.venue.name,event.venue.address,event.venue.city].filter(Boolean).join(', ') : 'स्थान शीघ्र बताया जाएगा';
+  const shortVenueLabel = event => event.venue?.shortLabel || (event.venue ? [event.venue.name,event.venue.city].filter(Boolean).join(', ') : 'स्थान शीघ्र बताया जाएगा');
   const mapURL = event => event.venue?.mapsUrl || (event.venue && (!event.venue.isHome || event.venue.mapsQuery || event.venue.address) ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue.mapsQuery || venueLabel(event))}` : null);
   const eventSortKey = event => `${event.date || '0000-00-00'}T${event.time || '23:59'}`;
   const chronological = events => {
@@ -109,8 +126,10 @@
     $('#scratch-status').textContent = `3 में से ${formatNumber(revealed)} तिथिपत्र खुले हैं।`;
     if (scratchStates.length === 3 && revealed === 3) {
       $('#date-details').hidden = false;
-      $('#reveal-date').textContent = 'इस तिथि को सहेज लीजिए ✧';
-      $('#reveal-date').setAttribute('aria-label','विवाह तिथि खुल गई है: 10 फ़रवरी 2027');
+      $('#scratch-hint').hidden = true;
+      const control=$('#reveal-date'), shouldMoveFocus=document.activeElement===control;
+      control.hidden=true; control.disabled=true;
+      if(shouldMoveFocus) $('#date-details [data-calendar]').focus({preventScroll:true});
     }
   }
   function paintCover(state) {
@@ -213,13 +232,14 @@
   $('[data-map="wedding"]').href = mapURL(wedding);
   $('#wedding-venue-heading').textContent = wedding.venue.name;
   $('#wedding-venue-schedule').innerHTML = `${escapeHTML(dateLabel(wedding))}<br>${escapeHTML(timeLabel(wedding))}`;
-  const mehendiEvent = config.events.find(event => event.id === 'bride-mehendi');
-  $('#additional-venues').innerHTML = [
-    {title:'हिमांशी के घर के समारोह',subtitle:'सत्संग · कीर्तन · हल्दी',venue:config.homeVenue},
-    {title:'शुभम के घर के समारोह',subtitle:'मेहंदी एवं कॉकटेल · कीर्तन · हल्दी · बारात प्रस्थान · वधू स्वागत',venue:config.groomHomeVenue},
-    {title:'मेहंदी एवं कॉकटेल',subtitle:mehendiEvent?`${dateLabel(mehendiEvent)} · ${timeLabel(mehendiEvent)}`:'',venue:mehendiEvent?.venue}
-  ].filter(card=>card.venue).map(card=>`<article class="additional-venue"><p class="overline">${escapeHTML(card.title)}</p><h4>${escapeHTML(card.venue.name)}</h4><p>${escapeHTML([card.venue.address,card.venue.city].filter(Boolean).join(', '))}</p><p class="venue-functions">${escapeHTML(card.subtitle)}</p>${mapURL({venue:card.venue})?`<a class="text-button" href="${mapURL({venue:card.venue})}" target="_blank" rel="noopener noreferrer">रास्ता देखें ↗</a>`:''}</article>`).join('');
-  const hindiNames = {baraat:'बारात प्रस्थान', welcome:'वधू स्वागत', satsang:'सत्संग', keertan:'कीर्तन', cocktail:'कॉकटेल', haldi:'हल्दी', wedding:'शुभ विवाह', mehendi:'मेहंदी एवं कॉकटेल', vidaai:'विदाई'};
+  const ownedEvents = side => chronological(config.events.filter(event => event.side===side));
+  const homeSummary = (side,venue) => [...new Set(ownedEvents(side).filter(event=>event.venue===venue).map(event=>event.title))].join(' · ');
+  const venueCards = [
+    {side:'bride',title:'हिमांशी के घर के समारोह',subtitle:homeSummary('bride',config.homeVenue),venue:config.homeVenue},
+    {side:'groom',title:'शुभम के घर के समारोह',subtitle:homeSummary('groom',config.groomHomeVenue),venue:config.groomHomeVenue},
+    ...config.events.filter(event=>event.side!=='shared'&&event.venue&&!event.venue.isHome).map(event=>({side:event.side,title:`${config.families[event.side].name} की ${event.title}`,subtitle:`${dateLabel(event)} · ${timeLabel(event)}`,venue:event.venue}))
+  ];
+  $('#additional-venues').innerHTML=venueCards.filter(card=>card.venue).map(card=>`<article class="additional-venue" data-owner="${card.side}"><p class="overline">${escapeHTML(card.title)}</p><h4>${escapeHTML(card.venue.name)}</h4><p>${escapeHTML([card.venue.address,card.venue.city].filter(Boolean).join(', '))}</p><p class="venue-functions">${escapeHTML(card.subtitle)}</p>${mapURL({venue:card.venue})?`<a class="text-button" href="${escapeHTML(mapURL({venue:card.venue}))}" target="_blank" rel="noopener noreferrer">रास्ता देखें ${icon('map')}</a>`:''}</article>`).join('');
   function eventIllustration(event, miniature=false) {
     const artwork = config.eventArtwork[event.type];
     if (!artwork) return '<span class="timeline-art-missing">चित्र शीघ्र जोड़ा जाएगा</span>';
@@ -233,8 +253,9 @@
     const date=event.date ? new Intl.DateTimeFormat(locale,{weekday:'short',day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Kolkata'}).format(dateOnly(event.date)).toUpperCase() : event.dateLabel || 'तिथि शीघ्र बताई जाएगी';
     const clock=event.time?clockLabel(event):null;
     const title=shared?'<span class="timeline-couple">हिमांशी संग शुभम</span><span class="sr-only"> — </span>शुभ विवाह':escapeHTML(event.title);
+    const description=event.timelineDescription && ![event.title,event.timeLabel].filter(Boolean).some(text=>text.replace(/[।.!\s]+$/u,'')===event.timelineDescription.replace(/[।.!\s]+$/u,'')) ? event.timelineDescription : null;
     const time=clock?`<span>${escapeHTML(clock)}</span>`:event.timeLabel?`<span>${escapeHTML(event.timeLabel)}</span>`:'<span>समय शीघ्र</span><span>बताया जाएगा</span>';
-    return `<article role="listitem" class="timeline-event celebration-card event-type-${escapeHTML(event.type)}" id="event-${escapeHTML(event.id)}" data-position="${index%2===0?'art-left':'art-right'}" data-family="${escapeHTML(event.side)}"><figure class="timeline-scene">${eventIllustration(event)}</figure><span class="timeline-marker">${floralMarker()}</span><div class="timeline-details"><p class="timeline-date">${escapeHTML(date)}</p><p class="timeline-time ${clock?'':'is-pending'}" aria-label="${escapeHTML(timeLabel(event))}">${time}</p><h3>${title}</h3>${hindiNames[event.type]?`<p class="timeline-hindi" lang="hi">${hindiNames[event.type]}</p>`:''}<p class="timeline-description">${escapeHTML(event.timelineDescription || event.description)}</p><p class="timeline-venue">${escapeHTML(event.venue?venueLabel(event):'स्थान शीघ्र बताया जाएगा')}</p>${event.side==='shared'&&!event.time?'<p class="timeline-time-note">विवाह की रात्रि · सही समय शीघ्र बताया जाएगा</p>':''}<div class="timeline-actions">${mapURL(event)?`<a href="${mapURL(event)}" target="_blank" rel="noopener noreferrer">रास्ता देखें ↗</a>`:''}${event.date&&event.time?`<button type="button" data-calendar="${escapeHTML(event.id)}">कैलेंडर में जोड़ें</button>`:''}</div>${shared?'<p class="timeline-family-note">दो परिवार · जीवन भर का साथ</p>':''}${event.dressCode?`<p class="event-dress">परिधान: ${escapeHTML(event.dressCode)}</p>`:''}</div></article>`;
+    return `<article role="listitem" class="timeline-event celebration-card event-type-${escapeHTML(event.type)}" id="event-${escapeHTML(event.id)}" data-position="${index%2===0?'art-left':'art-right'}" data-family="${escapeHTML(event.side)}"><figure class="timeline-scene">${eventIllustration(event)}</figure><span class="timeline-marker">${floralMarker()}</span><div class="timeline-details"><p class="timeline-date">${escapeHTML(date)}</p><p class="timeline-time ${clock?'':'is-pending'}" aria-label="${escapeHTML(timeLabel(event))}">${time}</p><h3>${title}</h3>${description?`<p class="timeline-description">${escapeHTML(description)}</p>`:''}<p class="timeline-venue">${escapeHTML(shortVenueLabel(event))}</p>${event.side==='shared'&&!event.time?'<p class="timeline-time-note">विवाह की रात्रि · सही समय शीघ्र बताया जाएगा</p>':''}<div class="timeline-actions">${mapURL(event)?`<a href="${escapeHTML(mapURL(event))}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(event.title)}: ${escapeHTML(shortVenueLabel(event))} का रास्ता देखें">रास्ता देखें ${icon('map')}</a>`:''}${event.date&&event.time?`<button type="button" data-calendar="${escapeHTML(event.id)}" aria-label="${escapeHTML(event.title)} कैलेंडर में जोड़ें">कैलेंडर में जोड़ें ${icon('calendar')}</button>`:''}</div>${event.dressCode?`<p class="event-dress">परिधान: ${escapeHTML(event.dressCode)}</p>`:''}</div></article>`;
   }
   let timelineObserver;
   function updateTimelineProgress() {
@@ -274,10 +295,19 @@
   });
   const unassignedEvents = config.events.filter(event => event.side === 'unassigned');
   $('.pending-events').hidden = unassignedEvents.length === 0;
-  $('#unassigned-events').innerHTML = unassignedEvents.map(event => `<article class="unassigned-event">${eventIllustration(event,true)}<div><small>आयोजन किस परिवार का है, इसकी पुष्टि बाकी है</small><strong>${escapeHTML(event.title)}</strong><span>${escapeHTML(dateLabel(event))} · ${escapeHTML(timeLabel(event))}<br>${escapeHTML(venueLabel(event))}</span>${mapURL(event)?`<br><a class="text-button" href="${mapURL(event)}" target="_blank" rel="noopener noreferrer">रास्ता देखें ↗</a>`:''}</div></article>`).join('');
+  $('#unassigned-events').innerHTML = unassignedEvents.map(event => `<article class="unassigned-event">${eventIllustration(event,true)}<div><small>आयोजन किस परिवार का है, इसकी पुष्टि बाकी है</small><strong>${escapeHTML(event.title)}</strong><span>${escapeHTML(dateLabel(event))} · ${escapeHTML(timeLabel(event))}<br>${escapeHTML(venueLabel(event))}</span>${mapURL(event)?`<br><a class="text-button" href="${escapeHTML(mapURL(event))}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(event.title)}: ${escapeHTML(shortVenueLabel(event))} का रास्ता देखें">रास्ता देखें ${icon('map')}</a>`:''}</div></article>`).join('');
   $('#story-copy').innerHTML = config.story.paragraphs.map(paragraph => `<p>${escapeHTML(paragraph)}</p>`).join('');
   $('#story-heading').textContent = config.story.heading;
-  $('#family-cards').innerHTML = ['bride','groom'].map(side => { const family = config.families[side]; return `<article class="family-card"><span aria-hidden="true">❧</span><p class="overline">${side==='bride'?'वधू का परिवार':'वर का परिवार'}</p><h3>${escapeHTML(family.name)}</h3>${family.members.length?`<ul>${family.members.map(member=>`<li>${escapeHTML(member.name)}<span>${escapeHTML(member.relationship)}</span></li>`).join('')}</ul>`:'<p class="family-placeholder">परिजनों के नाम शीघ्र साझा किए जाएँगे।</p>'}</article>`; }).join('');
+  function renderContacts(){
+    const contacts=['groom','bride'].map(side=>({side,...config.families[side].contact})).filter(contact=>contact.name&&typeof contact.phone==='string'&&/^\+?[1-9]\d{7,14}$/.test(contact.phone));
+    $('#contacts').hidden=contacts.length===0;
+    $$('[data-contact-nav]').forEach(link=>link.hidden=contacts.length===0);
+    $('#contact-cards').innerHTML=contacts.map(contact=>{
+      const digits=contact.phone.replace(/\D/g,'');
+      return `<article class="contact-card"><p>${escapeHTML(config.families[contact.side].name)} का परिवार</p><h3>${escapeHTML(contact.name)}</h3><p class="contact-number">+${digits}</p><div class="contact-actions"><a href="tel:+${digits}" aria-label="${escapeHTML(contact.name)} को फ़ोन करें">${icon('phone')} फ़ोन करें</a><a href="https://wa.me/${digits}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(contact.name)} से व्हाट्सऐप पर संपर्क करें">${icon('message')} व्हाट्सऐप</a></div></article>`;
+    }).join('');
+  }
+  renderContacts();
 
   function calendarText(event) {
     if (!event?.date) return null;
@@ -300,7 +330,7 @@
     setTimeout(()=>URL.revokeObjectURL(url),1000); toast('कैलेंडर की फ़ाइल तैयार है। तिथि सहेजने के लिए इसे खोलें।');
   });
 
-  // Confirmed ceremony time drives the countdown; a date-only fallback remains available.
+  // Confirmed wedding time drives the countdown; a date-only fallback remains available.
   const countdownTarget = new Date(`${wedding.date}T${wedding.time || '00:00'}:00+05:30`);
   function updateCountdown(now = new Date()) {
     const remaining = Math.max(0,countdownTarget-now);
@@ -312,7 +342,7 @@
 
   // Scroll-snap album with native touch scrolling and a shared keyboard-accessible lightbox.
   const track = $('#photo-track');
-  track.innerHTML = config.photos.map((photo,index)=>`<figure class="photo-memory"><button class="photo-open" type="button" data-photo="${index}" aria-label="तस्वीर खोलें: ${escapeHTML(photo.caption)}"><img src="${photoURL(photo)}" alt="${escapeHTML(photo.alt)}" width="960" height="1280" loading="lazy" decoding="async" style="object-position:${escapeHTML(photo.position)}"><span aria-hidden="true">↗</span></button><figcaption>${escapeHTML(photo.caption)}</figcaption></figure>`).join('');
+  track.innerHTML = config.photos.map((photo,index)=>`<figure class="photo-memory"><button class="photo-open" type="button" data-photo="${index}" aria-label="तस्वीर खोलें: ${escapeHTML(photo.caption)}"><img src="${photoURL(photo)}" alt="${escapeHTML(photo.alt)}" width="960" height="1280" loading="lazy" decoding="async" style="object-position:${escapeHTML(photo.position)}"><span aria-hidden="true">${icon('enlarge')}</span></button><figcaption>${escapeHTML(photo.caption)}</figcaption></figure>`).join('');
   function moveGallery(direction) {
     const card = track.querySelector('.photo-memory');
     const step = (card?.getBoundingClientRect().width || 300) + (window.innerWidth <=600 ?18:25);
@@ -364,7 +394,7 @@
   // Try audible autoplay, then retry within a real guest interaction if blocked.
   const audio=$('#background-music'),musicButton=$('#music-toggle');
   if(config.music.src&&config.music.enabled!==false){audio.src=config.music.src;audio.volume=config.music.volume ?? 0.4;musicButton.hidden=false;musicButton.setAttribute('aria-label',`${config.music.title || 'पृष्ठभूमि का संगीत'} चलाएँ`);}
-  function updateMusic(){const playing=!audio.paused;musicButton.textContent=playing?'Ⅱ संगीत रोकें':'♫ संगीत चलाएँ';musicButton.setAttribute('aria-pressed',String(playing));musicButton.setAttribute('aria-label',playing?'पृष्ठभूमि का संगीत रोकें':'पृष्ठभूमि का संगीत चलाएँ');}
+  function updateMusic(){const playing=!audio.paused;musicButton.innerHTML=playing?`${icon('pause')} संगीत रोकें`:`${icon('play')} संगीत चलाएँ`;musicButton.setAttribute('aria-pressed',String(playing));musicButton.setAttribute('aria-label',playing?'पृष्ठभूमि का संगीत रोकें':'पृष्ठभूमि का संगीत चलाएँ');}
   let musicStarted=false, musicChoice=false, musicPending=false;
   async function startMusicAutomatically(){
     if(musicButton.hidden||musicChoice||musicStarted||musicPending)return;
@@ -390,8 +420,8 @@
   void startMusicAutomatically();
 
   const menu=$('.menu-toggle'),mobileNav=$('#mobile-nav');
-  function closeMenu(){mobileNav.hidden=true;menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','विकल्प खोलें');}
-  menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';mobileNav.hidden=!open;menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'विकल्प बंद करें':'विकल्प खोलें');});
+  function closeMenu(){menu.innerHTML=icon('menu');mobileNav.hidden=true;menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','विकल्प खोलें');}
+  menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.innerHTML=icon(open?'close':'menu');mobileNav.hidden=!open;menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'विकल्प बंद करें':'विकल्प खोलें');});
   $$('#mobile-nav a').forEach(link=>link.addEventListener('click',closeMenu));
   document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeMenu();if(photoDialog.open)photoDialog.close();}});
   if('IntersectionObserver' in window&&!motion.matches){
@@ -400,5 +430,5 @@
   }
 
   // Small public surface for deterministic checks and local content previews.
-  window.WeddingApp={setSide,finishIntro,startIntro,revealAllDates,calendarText,updateCountdown,scheduleEvents,updateTimelineProgress,getState:()=>({side:activeSide,intro:introState,scratched:scratchStates.map(state=>state.revealed)} )};
+  window.WeddingApp={setSide,finishIntro,startIntro,revealAllDates,calendarText,updateCountdown,scheduleEvents,updateTimelineProgress,renderContacts,getState:()=>({side:activeSide,intro:introState,scratched:scratchStates.map(state=>state.revealed)} )};
 })();

@@ -402,3 +402,71 @@ html[lang=hi] .album-brand small{margin-left:0}
 /* Readable full dates for both families' celebration timelines. */
 html[lang=hi] .timeline-date{font-size:20px;font-weight:600;line-height:1.7;letter-spacing:0;color:#59472d;max-width:none;margin-bottom:10px}
 @media(max-width:600px){html[lang=hi] .timeline-date{font-size:18px;line-height:1.7;margin-bottom:9px}}
+
+/* Practical invitation polish: readable Hindi copy and font-independent controls. */
+.ui-icon{display:inline-block;width:20px;height:20px;flex:0 0 20px;vertical-align:middle;pointer-events:none}
+span[data-icon],i[data-icon]{display:inline-flex;align-items:center;justify-content:center;font-style:normal}
+.round-button,.text-button,.music-toggle,.skip-intro,.scroll-cue,.timeline-actions>a,.timeline-actions>button,.contact-actions>a{gap:9px;align-items:center}
+.text-button,.music-toggle,.skip-intro,.scroll-cue,.contact-actions>a{display:inline-flex;justify-content:center}
+.round-button{display:inline-flex;justify-content:center;min-width:44px;min-height:44px}
+.round-button .ui-icon{width:23px;height:23px;flex-basis:23px}
+.photo-open>span{display:flex;align-items:center;justify-content:center}
+.photo-open>span .ui-icon{width:19px;height:19px}
+.menu-toggle .ui-icon{width:24px;height:24px}
+html[lang=hi] .site-header nav>a{font-size:16px;letter-spacing:0;min-height:44px;display:inline-flex;align-items:center}
+html[lang=hi] .site-header .mobile-nav>a{font-size:17px}
+html[lang=hi] .scratch-hint,html[lang=hi] .scratch-access .text-button{font-size:16px;line-height:1.8;letter-spacing:0}
+.date-remember{font-family:var(--serif);font-size:20px;color:#665332;margin-bottom:14px}
+html[lang=hi] .date-label{font-size:14px;letter-spacing:0}
+html[lang=hi] .side-status{font-size:15px;line-height:1.8;color:#625035}
+html[lang=hi] .timeline-venue{font-size:18px;font-style:normal;line-height:1.9;color:#57492f;overflow-wrap:normal}
+html[lang=hi] .timeline-actions>a,html[lang=hi] .timeline-actions>button{font-size:16px;font-style:normal;line-height:1.8;color:#58472b;gap:8px}
+html[lang=hi] .additional-venue>p:not(.overline){font-size:17px;line-height:1.9}
+html[lang=hi] .additional-venue .overline{font-size:15px;color:#624d30}
+html[lang=hi] .additional-venue .venue-functions{font-size:16px!important;font-style:normal}
+html[lang=hi] .additional-venue .text-button{font-size:16px;min-height:44px}
+html[lang=hi] .gallery-controls>p{font-size:16px;line-height:1.8;max-width:340px}
+html[lang=hi] .skip-intro{font-size:15px;line-height:1.7;max-width:230px;letter-spacing:0}
+html[lang=hi] .music-toggle{font-size:15px;min-height:44px}
+.closing-monogram{width:96px;height:96px;margin:28px auto 0}
+.contact-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:22px;max-width:760px;margin:25px auto}
+.contact-card{padding:25px;border:1px solid var(--border);border-radius:6px;text-align:center;background:#fff8eb55}
+.contact-card>p{font-size:16px;line-height:1.8}.contact-card h3{font-size:24px;margin:10px 0}.contact-number{font-variant-numeric:tabular-nums}
+.contact-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:15px}.contact-actions>a{font-size:16px;min-height:44px;text-decoration:underline;text-underline-offset:4px}
+#the-date,#celebrations,#our-story,#location,#contacts{scroll-margin-top:110px}
+@media(max-width:600px){
+  html[lang=hi] .timeline-venue{font-size:16px;line-height:1.8;max-width:none}
+  html[lang=hi] .timeline-description{font-size:16px;line-height:1.8}
+  html[lang=hi] .celebrations-section .side-selector>button{font-size:16px;line-height:1.6}
+  html[lang=hi] .timeline-time{font-size:27px;line-height:1.6}
+  html[lang=hi] .additional-venue>p:not(.overline){font-size:16px}
+  html[lang=hi] .gallery-controls>p{font-size:15px;max-width:240px}
+  html[lang=hi] .scratch-hint,html[lang=hi] .scratch-access .text-button{font-size:16px}
+  .site-header{padding-top:7px;padding-bottom:7px}
+  #the-date,#celebrations,#our-story,#location,#contacts{scroll-margin-top:95px}
+}
+/* Stack narrow phone rows so practical text can stay at 16px without squeezing. */
+@media(max-width:480px){
+  .celebrations-section .timeline-event.celebration-card{grid-template-columns:26px minmax(0,1fr);min-height:0;padding:26px 0 36px}
+  .timeline-track,.timeline-end-dot{left:9px}
+  .timeline-marker{left:9px;top:120px;width:22px;height:22px}
+  .timeline-event>.timeline-scene,.timeline-event[data-position=art-right]>.timeline-scene{grid-column:2;grid-row:1;justify-content:center;margin:0 0 18px}
+  .timeline-scene-image{max-width:210px}
+  .timeline-event>.timeline-details,.timeline-event[data-position=art-right]>.timeline-details{grid-column:2;grid-row:2;text-align:left;padding:0 3px 0 8px}
+  .timeline-event[data-position=art-right] .timeline-actions{align-items:flex-start}
+  .timeline-event .timeline-date,.timeline-event .timeline-description,.timeline-event .timeline-venue{max-width:none;margin-left:0}
+  html[lang=hi] .timeline-date{font-size:18px;line-height:1.8}
+  html[lang=hi] .timeline-time{font-size:29px;line-height:1.6}
+  html[lang=hi] .celebrations-section .timeline-event h3{font-size:26px;line-height:1.7}
+  .timeline-couple{font-size:18px}
+  .timeline-actions{flex-direction:row;flex-wrap:wrap;gap:2px 14px}
+  .timeline-actions>a,.timeline-actions>button{white-space:normal;text-align:left}
+  html[lang=hi] .gallery-controls>p{font-size:15px;max-width:205px}
+}
+
+.skip-intro>span{margin-left:0}
+@media(max-width:360px){html[lang=hi] .skip-intro{max-width:190px;font-size:14px;padding:8px 10px}.skip-intro .ui-icon{width:18px;height:18px;flex-basis:18px}.gallery-controls{padding-left:0;padding-right:0;gap:10px}}
+
+html[lang=hi] .pill,html[lang=hi] .venue-copy .pill{font-size:16px;line-height:1.8;letter-spacing:0;gap:10px;white-space:normal}
+html[lang=hi] .countdown span,html[lang=hi] .date-label{font-size:15px;line-height:1.8;letter-spacing:0}
+html[lang=hi] .countdown-section>p:last-child{font-size:16px;line-height:1.9}

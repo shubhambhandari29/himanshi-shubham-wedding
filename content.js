@@ -5,16 +5,16 @@ window.WEDDING = {
   numberLocale: 'hi-IN-u-nu-latn',
   couple: {bride: 'हिमांशी', groom: 'शुभम', city: 'देहरादून, उत्तराखंड'},
   families: {
-    groom: {name: 'शुभम', label: 'शुभम के समारोह', contact: null, members: [{name: 'श्रीमती मंजुश्री भंडारी', relationship: 'माता'}, {name: 'श्री रविंद्र सिंह भंडारी', relationship: 'पिता'}]},
-    bride: {name: 'हिमांशी', label: 'हिमांशी के समारोह', contact: null, members: [{name: 'श्रीमती वीना राणा', relationship: 'माता'}, {name: 'श्री राजेंद्र सिंह राणा', relationship: 'पिता'}]}
+    groom: {name: 'शुभम', label: 'शुभम के समारोह', contact: {name: null, phone: null}, members: [{name: 'श्रीमती मंजुश्री भंडारी', relationship: 'माता'}, {name: 'श्री रविंद्र सिंह भंडारी', relationship: 'पिता'}]},
+    bride: {name: 'हिमांशी', label: 'हिमांशी के समारोह', contact: {name: null, phone: null}, members: [{name: 'श्रीमती वीना राणा', relationship: 'माता'}, {name: 'श्री राजेंद्र सिंह राणा', relationship: 'पिता'}]}
   },
   // Use international digits only, e.g. a confirmed Indian number prefixed with 91.
-  // These contacts must be confirmed by the couple before enabling WhatsApp links.
+  // Fill both name and phone only for contacts verified by the couple; incomplete cards stay hidden.
   music: {src: 'assets/Sajna%20-Darshan%20Raval%20%28Audio%20Song%29%20%23DD.mp3', title: 'सजना', enabled: true, volume: 0.4, source: 'user-provided', licence: null},
   motion: {introDuration: 4800, ambient: true, leafDuration: 12000, boatBobDuration: 5000, petalDuration: 17000, rippleDuration: 2600, scratchThreshold: 0.40, scratchBrush: 34},
   // Confirmed bride-side home address, shared by the couple on 13 November 2026.
-  homeVenue: {name: 'निवास स्थान', address: 'गली नंबर ११, इंद्रप्रस्थ कॉलोनी, ६ नंबर पुलिया के पास', city: 'जोगीवाला, देहरादून', mapsQuery: 'Lane No 11, Indraprastha Colony, near 6 Number Puliya, Jogiwala, Dehradun', isHome: true},
-  groomHomeVenue: {name: 'भंडारी निवास', address: 'सिद्धपुरम, गली नंबर 3, हर्रावाला', city: 'देहरादून, उत्तराखंड', mapsUrl: 'https://maps.app.goo.gl/T5PzBUmyjkBatVS26', isHome: true},
+  homeVenue: {name: 'हिमांशी का निवास', shortLabel: 'हिमांशी का निवास, जोगीवाला', address: 'गली नंबर 11, इंद्रप्रस्थ कॉलोनी, 6 नंबर पुलिया के पास', city: 'जोगीवाला, देहरादून', mapsQuery: 'Lane No 11, Indraprastha Colony, near 6 Number Puliya, Jogiwala, Dehradun', isHome: true},
+  groomHomeVenue: {name: 'भंडारी निवास', shortLabel: 'भंडारी निवास, हर्रावाला', address: 'सिद्धपुरम, गली नंबर 3, हर्रावाला', city: 'देहरादून, उत्तराखंड', mapsUrl: 'https://maps.app.goo.gl/T5PzBUmyjkBatVS26', isHome: true},
   // Original decorative miniatures; these illustrate the functions, not the actual venues.
   eventArtwork: {
     satsang: {src: 'assets/events/satsang.webp', alt: 'फूलों, ग्रंथ, हारमोनियम और दीपों से सजे शांत सत्संग स्थल का जलरंग चित्र'},
@@ -29,21 +29,21 @@ window.WEDDING = {
   },
   events: [
     {id: 'groom-cocktail', side: 'groom', type: 'mehendi', title: 'मेहंदी एवं कॉकटेल', date: '2027-02-08', time: '20:00', venueKey: 'groomHomeVenue', description: 'मेहंदी, संगीत और रात्रि भोज में शामिल हों।', timelineDescription: 'मेहंदी, संगीत और रात्रि भोज।', dressCode: null},
-    {id: 'groom-keertan', side: 'groom', type: 'keertan', title: 'कीर्तन', date: '2027-02-09', time: '14:00', venueKey: 'groomHomeVenue', description: 'घर पर भजन और कीर्तन।', timelineDescription: 'भजन और कीर्तन।', dressCode: null},
-    {id: 'groom-haldi', side: 'groom', type: 'haldi', title: 'हल्दी', date: '2027-02-10', time: '11:00', venueKey: 'groomHomeVenue', description: 'घर पर हल्दी की रस्म।', timelineDescription: 'हल्दी की रस्म।', dressCode: null},
-    {id: 'groom-baraat', side: 'groom', type: 'baraat', title: 'बारात प्रस्थान', date: '2027-02-10', time: '19:00', venueKey: 'groomHomeVenue', description: 'भंडारी निवास से बारात का प्रस्थान।', timelineDescription: 'भंडारी निवास से बारात का प्रस्थान।', dressCode: null},
-    {id: 'groom-welcome', side: 'groom', type: 'welcome', title: 'वधू स्वागत', date: '2027-02-11', time: '07:00', venueKey: 'groomHomeVenue', description: 'भंडारी परिवार में वधू का स्वागत।', timelineDescription: 'भंडारी परिवार में वधू का स्वागत।', dressCode: null},
-    {id: 'bride-satsang', side: 'bride', type: 'satsang', title: 'सत्संग', date: '2027-02-08', time: '11:00', venueKey: 'homeVenue', description: 'घर पर सत्संग में आपका स्वागत है।', timelineDescription: 'सत्संग एवं आशीर्वाद।', dressCode: null},
-    {id: 'bride-keertan', side: 'bride', type: 'keertan', title: 'कीर्तन', date: '2027-02-08', time: '14:00', venueKey: 'homeVenue', description: 'घर पर भजन और कीर्तन।', timelineDescription: 'भजन और कीर्तन।', dressCode: null},
-    {id: 'bride-mehendi', side: 'bride', type: 'mehendi', title: 'मेहंदी एवं कॉकटेल', date: '2027-02-09', time: '20:00', venue: {name: 'स्काई गार्डन', city: 'जोगीवाला, देहरादून', address: null, mapsQuery: 'Sky Garden Wedding Point, Jogiwala, Dehradun'}, description: 'मेहंदी, संगीत और रात्रि भोज में शामिल हों।', timelineDescription: 'मेहंदी, संगीत और रात्रि भोज।', dressCode: null},
-    {id: 'bride-haldi', side: 'bride', type: 'haldi', title: 'हल्दी', date: '2027-02-10', time: '11:00', venueKey: 'homeVenue', description: 'घर पर हल्दी की रस्म।', timelineDescription: 'हल्दी की रस्म।', dressCode: null},
-    {id: 'wedding', side: 'shared', type: 'wedding', title: 'हिमांशी संग शुभम — शुभ विवाह', date: '2027-02-10', time: '20:00', venue: {name: 'शिवप्रिया फार्म्स', city: 'देहरादून', address: null, mapsQuery: 'Shivpriya Farms, Dehradun'}, description: 'शुभ विवाह में आप सपरिवार सादर आमंत्रित हैं।', timelineDescription: 'आप सपरिवार सादर आमंत्रित हैं।', dressCode: null},
+    {id: 'groom-keertan', side: 'groom', type: 'keertan', title: 'कीर्तन', date: '2027-02-09', time: '14:00', venueKey: 'groomHomeVenue', description: 'घर पर भजन और कीर्तन।', timelineDescription: null, dressCode: null},
+    {id: 'groom-haldi', side: 'groom', type: 'haldi', title: 'हल्दी', date: '2027-02-10', time: '11:00', venueKey: 'groomHomeVenue', description: 'घर पर हल्दी की रस्म।', timelineDescription: null, dressCode: null},
+    {id: 'groom-baraat', side: 'groom', type: 'baraat', title: 'बारात प्रस्थान', date: '2027-02-10', time: '19:00', venueKey: 'groomHomeVenue', description: 'भंडारी निवास से बारात का प्रस्थान।', timelineDescription: null, dressCode: null},
+    {id: 'groom-welcome', side: 'groom', type: 'welcome', title: 'वधू स्वागत', date: '2027-02-11', time: '07:00', venueKey: 'groomHomeVenue', description: 'भंडारी परिवार में वधू का स्वागत।', timelineDescription: null, dressCode: null},
+    {id: 'bride-satsang', side: 'bride', type: 'satsang', title: 'सत्संग', date: '2027-02-08', time: '11:00', venueKey: 'homeVenue', description: 'घर पर सत्संग में आपका स्वागत है।', timelineDescription: null, dressCode: null},
+    {id: 'bride-keertan', side: 'bride', type: 'keertan', title: 'कीर्तन', date: '2027-02-08', time: '14:00', venueKey: 'homeVenue', description: 'घर पर भजन और कीर्तन।', timelineDescription: null, dressCode: null},
+    {id: 'bride-mehendi', side: 'bride', type: 'mehendi', title: 'मेहंदी एवं कॉकटेल', date: '2027-02-09', time: '20:00', venue: {name: 'साथी वेडिंग पॉइंट', shortLabel: 'साथी वेडिंग पॉइंट, देहरादून', city: 'देहरादून', address: null, mapsUrl: 'https://share.google/F47hnI9tc7TaGotYH'}, description: 'मेहंदी, संगीत और रात्रि भोज में शामिल हों।', timelineDescription: 'मेहंदी, संगीत और रात्रि भोज।', dressCode: null},
+    {id: 'bride-haldi', side: 'bride', type: 'haldi', title: 'हल्दी', date: '2027-02-10', time: '11:00', venueKey: 'homeVenue', description: 'घर पर हल्दी की रस्म।', timelineDescription: null, dressCode: null},
+    {id: 'wedding', side: 'shared', type: 'wedding', title: 'हिमांशी संग शुभम — शुभ विवाह', date: '2027-02-10', time: '20:00', venue: {name: 'शिवप्रिया फार्म्स', city: 'देहरादून', address: null, mapsQuery: 'Shivpriya Farms, Dehradun'}, description: 'शुभ विवाह में आप सपरिवार सादर आमंत्रित हैं।', timelineDescription: null, dressCode: null},
     // The poetic timing is intentional: do not invent an exact date/hour for vidaai.
-    {id: 'bride-vidaai', side: 'bride', type: 'vidaai', title: 'विदाई', date: null, dateLabel: 'विवाह के बाद', time: null, timeLabel: 'तारों की छाँव में', after: 'wedding', venue: null, description: 'विवाह के बाद विदाई।', timelineDescription: 'तारों की छाँव में।', dressCode: null}
+    {id: 'bride-vidaai', side: 'bride', type: 'vidaai', title: 'विदाई', date: null, dateLabel: 'विवाह के बाद', time: null, timeLabel: 'तारों की छाँव में', after: 'wedding', venue: null, description: 'विवाह के बाद विदाई।', timelineDescription: null, dressCode: null}
   ],
   story: {
     heading: 'हमारी कुछ यादें',
-    paragraphs: ['हम अपने विवाह में आपको सपरिवार आमंत्रित करते हैं।', 'आइए, हमारे और हमारे परिवारों के साथ इस खुशी में शामिल हों।'],
+    paragraphs: ['कुछ पुराने पल, कुछ नई यादें—और अब एक नया सफ़र।'],
     // Add your confirmed story or milestones here; no dates or personal history are assumed.
   },
   photos: [

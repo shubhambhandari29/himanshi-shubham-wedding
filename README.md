@@ -1,3 +1,5 @@
+> Production revision (publication authorized): invitation polish, SVG controls and Sathi Wedding Point correction. Preview: http://localhost:5173/?v=invitation-polish-1 . See [review notes](docs/INVITATION_POLISH_REVIEW.md).
+
 > Current revision: Latin digits throughout, supplied illustrated logo and replacement MP3; RSVP and travel advice removed. Event titles are concise and invitation copy simplified.
 
 > नवीन संपादन: तिथियाँ और घड़ी का समय अब 0–9 अंकों में हैं; H&S लोगो अंग्रेज़ी में है। मुख्य पाठ हिंदी में है। माता-पिता का परिचय और सत्संग/विदाई के नए चित्र जोड़े गए हैं। इस संस्करण का प्रकाशन 13 नवंबर 2026 को अधिकृत किया गया है; GitHub Pages इसे `main` से उपलब्ध कराता है।
@@ -10,7 +12,7 @@
 
 # Himanshi & Shubham — an invitation on the water
 
-A static, mobile-first wedding invitation, with an animated flower boat, independent watercolour lotus layers, a real scratch-to-reveal date, a framed invitation, family-specific celebrations, a swipeable album, an IST countdown, venue/travel cards, and a WhatsApp draft builder. No backend, guest database, tracking, or stored RSVP data.
+A static, mobile-first wedding invitation, with an animated flower boat, independent watercolour lotus layers, a real scratch-to-reveal date, a framed invitation, family-specific celebrations, a swipeable album, an IST countdown, venue cards and optional verified-family contact links. No backend, guest database, tracking, or stored RSVP data.
 
 ## Local preview
 
@@ -27,12 +29,12 @@ GitHub Pages serves the invitation from `main`. Live website: https://shubhambha
 
 ## Editable content
 
-`content.js` is the single source for events, family contacts, verified family members, story paragraphs, captions, photos, optional licensed music, and animation settings.
+`content.js` is the single source for events, family contacts (`families.groom.contact` / `families.bride.contact` with `name` and `phone`), verified family members, story paragraphs, captions, photos, optional licensed music, and animation settings.
 
 - Shared wedding: **10 February 2027, 8 PM IST**, **Shivpriya Farms, Dehradun**. The countdown and calendar now use this confirmed time.
-- Himanshi's confirmed events: Satsang on 8 February at 11 AM; Keertan on 8 February at 2 PM; combined Mehendi and Cocktail on 9 February at 8 PM at Sky Garden, Jogiwala; Haldi on 10 February at 11 AM at home; shared wedding on 10 February at 8 PM; Vidaai after the wedding, labelled ‘तारों की छाँव में’. Shubham’s confirmed schedule: combined Mehendi/Cocktail on 8 February at 8 PM, Keertan on 9 February at 2 PM, Haldi on 10 February at 11 AM, Baraat departure on 10 February at 7 PM, shared wedding at Shivpriya Farms at 8 PM, and Vadhu Swagat on 11 February at 7 AM. Home events use Bhandari Niwas, Siddhpuram Lane No 3, Harrawala, Dehradun and the supplied exact Maps link. Vadhu Swagat is shown at the family home.
+- Himanshi's confirmed events: Satsang on 8 February at 11 AM; Keertan on 8 February at 2 PM; combined Mehendi and Cocktail on 9 February at 8 PM at Sathi Wedding Point (user-supplied share link); Haldi on 10 February at 11 AM at home; shared wedding on 10 February at 8 PM; Vidaai after the wedding, labelled ‘तारों की छाँव में’. Shubham’s confirmed schedule: combined Mehendi/Cocktail on 8 February at 8 PM, Keertan on 9 February at 2 PM, Haldi on 10 February at 11 AM, Baraat departure on 10 February at 7 PM, shared wedding at Shivpriya Farms at 8 PM, and Vadhu Swagat on 11 February at 7 AM. Home events use Bhandari Niwas, Siddhpuram Lane No 3, Harrawala, Dehradun and the supplied exact Maps link. Vadhu Swagat is shown at the family home.
 - The couple confirmed the bride-side home address as Lane No 11, Indraprastha Colony, near 6 Number Puliya, Jogiwala, Dehradun. `homeVenue` supplies one shared address for Satsang, Keertan and Haldi. Earlier unassigned placeholders have been superseded: Haldi is 11 AM (not the older 10 AM), and Mehendi/Cocktail are one combined event. The empty pending-details disclosure is hidden.
-- Family members and relationships are empty until verified. Accommodation and exact street addresses have not been invented. Dress details remain unconfirmed.
+- Verified parents remain in the formal invitation. No other relatives or accommodation details are invented. Dress details remain unconfirmed.
 - RSVP and guest reply controls have been removed at the couple’s request.
 - The supplied Sajna MP3 is configured via its actual filename, with `enabled: true` and an initial volume of 0.4. Playback attempts autoplay; if blocked, the first invitation interaction retries it. The music control can pause playback and that choice is respected. Audio provenance is recorded as user-provided; licence metadata remains unspecified rather than inventing a permission statement. A null source or `enabled: false` hides the control.
 - Ambient motion, intro duration, scratch brush size, and the completion threshold are adjustable. All motion respects reduced-motion preferences.
