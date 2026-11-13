@@ -26,7 +26,7 @@ Every event’s ID, date, time, family side and ordering dependency matches the 
 Still needed:
 
 1. A verified contact name and international phone number for each family.
-2. Vidaai location. The repository does not explicitly confirm it, so it remains pending; no exact Vidaai date/time has been invented.
+2. Vidaai is now confirmed to depart from Himanshi’s home. Its exact date/time remain unspecified.
 3. Whether the wedding’s **8 PM** refers to guest arrival, reception, ceremony or pheras. It remains labelled generically as शुभ विवाह.
 4. An exact Maps share link/place ID for Himanshi’s home and Shivpriya Farms. These still use full-address/name search links; no pin was guessed.
 5. Sathi’s full postal address/locality, if it should be shown alongside the supplied share link. Dehradun is known; its precise locality was not inferred from the superseded venue.

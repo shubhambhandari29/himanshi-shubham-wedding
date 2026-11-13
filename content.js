@@ -39,7 +39,7 @@ window.WEDDING = {
     {id: 'bride-haldi', side: 'bride', type: 'haldi', title: 'हल्दी', date: '2027-02-10', time: '11:00', venueKey: 'homeVenue', description: 'घर पर हल्दी की रस्म।', timelineDescription: null, dressCode: null},
     {id: 'wedding', side: 'shared', type: 'wedding', title: 'हिमांशी संग शुभम — शुभ विवाह', date: '2027-02-10', time: '20:00', venue: {name: 'शिवप्रिया फार्म्स', city: 'देहरादून', address: null, mapsQuery: 'Shivpriya Farms, Dehradun'}, description: 'शुभ विवाह में आप सपरिवार सादर आमंत्रित हैं।', timelineDescription: null, dressCode: null},
     // The poetic timing is intentional: do not invent an exact date/hour for vidaai.
-    {id: 'bride-vidaai', side: 'bride', type: 'vidaai', title: 'विदाई', date: null, dateLabel: 'विवाह के बाद', time: null, timeLabel: 'तारों की छाँव में', after: 'wedding', venue: null, description: 'विवाह के बाद विदाई।', timelineDescription: null, dressCode: null}
+    {id: 'bride-vidaai', side: 'bride', type: 'vidaai', title: 'विदाई', date: null, dateLabel: 'विवाह के बाद', time: null, timeLabel: 'तारों की छाँव में', after: 'wedding', venueKey: 'homeVenue', description: 'हिमांशी के निवास से विदाई।', timelineDescription: null, dressCode: null}
   ],
   story: {
     heading: 'हमारी कुछ यादें',

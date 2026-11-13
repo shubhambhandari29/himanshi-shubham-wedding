@@ -53,4 +53,4 @@ A direct comparison with `HEAD:content.js` confirmed every event object, full ve
 
 Browser selection/discovery and prescribed troubleshooting were attempted; no browser is connected. **Actual desktop/mobile layout screenshots and rendered overflow checks could not be performed.** The artwork contact sheet is an artwork comparison, not a browser screenshot. The running preview is ready for those final visual checks before publication.
 
-Outstanding event facts are unchanged: Vidaai location and exact date/time are unconfirmed; the wedding’s 8 PM is still generic (not specifically guest arrival/pherās); Sathi’s full postal address and exact Maps pins for the bride’s home and wedding venue remain unconfirmed. No new event facts are needed for the visual redesign itself.
+Outstanding event facts are unchanged: Vidaai location is now confirmed as Himanshi’s home; its exact date/time remain unconfirmed; the wedding’s 8 PM is still generic (not specifically guest arrival/pherās); Sathi’s full postal address and exact Maps pins for the bride’s home and wedding venue remain unconfirmed. No new event facts are needed for the visual redesign itself.
