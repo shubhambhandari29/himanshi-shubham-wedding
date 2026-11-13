@@ -398,7 +398,6 @@
     activeSide=side;
     $$('[data-side]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.side===side)));
     renderCelebrations(side);
-    $('#side-status').textContent=`${config.families[side].name} के समारोह · शुभ विवाह दोनों परिवारों का है।`;
     animate($('#celebration-timeline'),[{opacity:.45},{opacity:1}],{duration:450,easing:'ease-out'});
     if(updateUrl){
       const url=new URL(window.location.href);url.searchParams.set('side',side);
