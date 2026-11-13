@@ -69,7 +69,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   w.WeddingApp.setSide('bride');assert.equal(w.WeddingApp.getState().intro,'revealed');
   w.WeddingApp.startIntro();assert.equal(w.WeddingApp.getState().intro,'revealed');assert.equal(env.opened.length,0);assert.equal(env.errors.length,0);
  });
- test('reduced motion immediately gives the complete usable invitation',t=>{const env=setup({reduced:true});t.after(env.close);assert.equal(env.w.WeddingApp.getState().intro,'revealed');assert(env.d.querySelector('.water-opening').classList.contains('instant'));assert(!env.d.querySelector('#send-whatsapp').hidden);assert.equal(env.errors.length,0)});
+ test('reduced motion immediately gives the complete usable invitation',t=>{const env=setup({reduced:true});t.after(env.close);assert.equal(env.w.WeddingApp.getState().intro,'revealed');assert(env.d.querySelector('.water-opening').classList.contains('instant'));assert(!env.d.querySelector('#rsvp'));assert.equal(env.errors.length,0)});
  test('scratch removes real cover pixels and completes at the configured threshold',t=>{
   const env=setup();t.after(env.close);const canvas=env.d.querySelector('.scratch-card canvas'),native=env.getBacking(canvas),ctx=native.getContext('2d');
   assert.equal(ctx.getImageData(75,79,1,1).data[3],255);
@@ -79,7 +79,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   for(let y=0;y<=158;y+=14)for(let x=0;x<=150;x+=15)pointer(env,canvas,'pointermove',x,y);
   pointer(env,canvas,'pointerup',150,158);
   assert.equal(env.w.WeddingApp.getState().scratched[0],true);assert(env.d.querySelector('#date-details').hidden);
-  env.d.querySelector('#reveal-date').click();assert.deepEqual([...env.w.WeddingApp.getState().scratched],[true,true,true]);assert(!env.d.querySelector('#date-details').hidden);assert.match(env.d.querySelector('#scratch-status').textContent,/३ में से ३/);
+  env.d.querySelector('#reveal-date').click();assert.deepEqual([...env.w.WeddingApp.getState().scratched],[true,true,true]);assert(!env.d.querySelector('#date-details').hidden);assert.match(env.d.querySelector('#scratch-status').textContent,/3 में से 3/);
  });
  test('partial scratching and completed cards survive resize',async t=>{
   const env=setup();t.after(env.close);const canvas=env.d.querySelector('.scratch-card canvas');
@@ -95,25 +95,14 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   for(const side of ['groom','bride','invalid']){
     const env=setup({url:'http://localhost:5173/?utm_source=family&side='+side});t.after(env.close);
     const expected=side==='bride'?'bride':'groom';assert.equal(env.w.WeddingApp.getState().side,expected);assert.equal(env.d.querySelectorAll('#celebration-timeline .celebration-card').length,expected==='bride'?6:3);assert.equal(env.d.querySelectorAll('#event-wedding').length,1);assert.match(env.d.querySelector('#event-wedding').textContent,/शिवप्रिया फार्म्स/);
-    const button=env.d.querySelector('[data-side="bride"]');button.focus();button.click();assert.equal(env.d.activeElement,button);assert.equal(new URL(env.w.location.href).searchParams.get('utm_source'),'family');assert.equal(env.d.querySelector('#rsvp-side').value,'bride');assert(!env.d.querySelector('#attend-groom-haldi'));assert(env.d.querySelector('#attend-wedding'));
+    const button=env.d.querySelector('[data-side="bride"]');button.focus();button.click();assert.equal(env.d.activeElement,button);assert.equal(new URL(env.w.location.href).searchParams.get('utm_source'),'family');assert.equal(env.w.WeddingApp.getState().side,'bride');
     env.dom.reconfigure({url:'http://localhost:5173/?side=groom'});env.w.dispatchEvent(new env.w.PopStateEvent('popstate'));assert.equal(env.w.WeddingApp.getState().side,'groom');assert.equal(env.errors.length,0);
   }
  });
  test('confirmed bride functions replace earlier unassigned placeholders without assuming groom details',t=>{const env=setup({url:'http://localhost:5173/?side=bride'});t.after(env.close);const{d,w}=env;assert(d.querySelector('.pending-events').hidden);assert.match(d.querySelector('#event-bride-mehendi').textContent,/9 फ़र/);assert.match(d.querySelector('#event-bride-mehendi').textContent,/स्काई गार्डन/);assert.match(d.querySelector('#event-bride-haldi').textContent,/प्रातः 11:00 बजे/);assert.equal(d.querySelectorAll('#celebration-timeline [data-calendar]').length,5);assert.equal(d.querySelectorAll('#celebration-timeline .timeline-event a').length,5);assert.equal(w.WeddingApp.calendarText(w.WEDDING.events.find(e=>e.id==='groom-haldi')),null);assert.match(d.querySelector('#family-cards').textContent,/मंजुश्री भंडारी/)});
  test('calendar is date-only when wedding time is unconfirmed and exports the actual venue',t=>{const env=setup({weddingTime:null});t.after(env.close);const event=env.w.WEDDING.events.find(e=>e.id==='wedding'),ics=env.w.WeddingApp.calendarText(event);assert.match(ics,/DTSTART;VALUE=DATE:20270210\r\nDTEND;VALUE=DATE:20270211/);assert.match(ics,/LOCATION:शिवप्रिया फार्म्स\\, देहरादून/);assert.match(ics,/आयोजन का सही समय अभी तय नहीं है/);env.d.querySelector('[data-calendar="wedding"]').click();assert.equal(env.downloads.length,1);assert.match(env.d.querySelector('[data-map="wedding"]').href,/Shivpriya%20Farms/)});
- test('countdown uses IST wedding date, has a date-only label and a post-date message',t=>{const env=setup({weddingTime:null});t.after(env.close);env.w.WeddingApp.updateCountdown(new Date('2027-02-09T18:29:00Z'));assert.equal(env.d.querySelector('#minutes').textContent,'०१');assert.match(env.d.querySelector('#countdown-note').textContent,/विवाह तिथि के आरंभ तक/);env.w.WeddingApp.updateCountdown(new Date('2027-02-10T00:00:00Z'));assert.equal(env.d.querySelector('#days').textContent,'००');assert.match(env.d.querySelector('#countdown-note').textContent,/शुभारंभ हो चुका है/)});
- test('gallery touch-friendly scrolling, lightbox navigation, close and restored focus',t=>{const env=setup();t.after(env.close);const{d,w}=env;assert.equal(d.querySelectorAll('.photo-memory').length,10);d.querySelector('#gallery-next').click();assert(d.querySelector('#photo-track').scrollLeft>0);const opener=d.querySelector('[data-photo="0"]');opener.focus();opener.click();assert(d.querySelector('#photo-dialog').open);const initial=d.querySelector('#lightbox-image').src;d.querySelector('#photo-next').click();assert.notEqual(d.querySelector('#lightbox-image').src,initial);d.querySelector('#photo-dialog').dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowLeft',bubbles:true}));assert.equal(d.querySelector('#lightbox-image').src,initial);d.querySelector('#photo-prev').click();assert.match(d.querySelector('#photo-counter').textContent,/१० \/ १०/);d.querySelector('#photo-close').click();assert(!d.querySelector('#photo-dialog').open);assert.equal(d.activeElement,opener);assert(!d.documentElement.classList.contains('album-open'))});
- test('RSVP validates names and functions, retains per-side drafts and omits the other family',async t=>{
-  const env=setup({clipboard:true});t.after(env.close);const{d,w}=env;
-  assert(d.querySelector('#send-whatsapp').disabled);d.querySelector('#guest-name').value='   ';submit(env,'#copy-rsvp');assert.match(d.querySelector('#rsvp-error').textContent,/अपना नाम लिखें/);
-  d.querySelector('#guest-name').value='Aditi & family';submit(env,'#copy-rsvp');assert.match(d.querySelector('#rsvp-error').textContent,/कम से कम एक समारोह/);
-  selectEvent(env,'groom-haldi',3);selectEvent(env,'wedding',4);d.querySelector('#guest-message').value='Can’t wait! ♥';submit(env,'#copy-rsvp');await tick();
-  assert.equal(env.copied.length,1);assert.match(env.copied[0],/शुभम की हल्दी — ३ अतिथि/);assert.match(env.copied[0],/शुभ विवाह — ४ अतिथि/);assert.match(env.copied[0],/Can’t wait! ♥/);assert(!env.copied[0].includes('हिमांशी की हल्दी'));assert.equal(env.opened.length,0);
-  w.WeddingApp.setSide('bride');assert(d.querySelector('#attend-wedding').checked);assert.equal(d.querySelector('#count-wedding').value,'४');assert(!d.querySelector('#attend-bride-haldi').checked);w.WeddingApp.setSide('groom');assert(d.querySelector('#attend-groom-haldi').checked);assert.equal(d.querySelector('#count-groom-haldi').value,'३');assert.equal(d.querySelector('#guest-name').value,'Aditi & family');
- });
- test('clipboard-denied fallback offers the exact draft for manual copying',async t=>{const env=setup();t.after(env.close);env.d.querySelector('#guest-name').value='Aditi';selectEvent(env,'wedding',2);submit(env,'#copy-rsvp');await tick();assert(!env.d.querySelector('#copy-fallback').hidden);assert.match(env.d.querySelector('#reply-text').value,/२ अतिथि/);assert.equal(env.d.activeElement,env.d.querySelector('#reply-text'));assert.equal(env.opened.length,0)});
- test('WhatsApp draft is encoded and opens only after explicit submission; nothing is sent',async t=>{const env=setup({contact:'919999999999'});t.after(env.close);assert(!env.d.querySelector('#send-whatsapp').disabled);env.d.querySelector('#guest-name').value='A & B';env.d.querySelector('#guest-message').value='Hello + नमस्ते';selectEvent(env,'wedding',2);assert.equal(env.opened.length,0);submit(env,'#send-whatsapp');await tick();assert.equal(env.opened.length,1);const url=new URL(env.opened[0]);assert.equal(url.hostname,'wa.me');assert.equal(url.pathname,'/919999999999');assert.match(url.searchParams.get('text'),/अतिथि: A & B/);assert.match(url.searchParams.get('text'),/Hello \+ नमस्ते/);assert.match(env.d.querySelector('#rsvp-status').textContent,/उत्तर नहीं भेजा है/)});
- test('guest counts enforce integer bounds and controls change only selected events',t=>{const env=setup();t.after(env.close);assert(env.d.querySelector('#count-groom-haldi').disabled);selectEvent(env,'groom-haldi',1);const row=env.d.querySelector('[data-event="groom-haldi"]');row.querySelector('[data-step="-1"]').click();assert.equal(env.d.querySelector('#count-groom-haldi').value,'१');row.querySelector('[data-step="1"]').click();assert.equal(env.d.querySelector('#count-groom-haldi').value,'२');env.d.querySelector('#count-groom-haldi').value='50';row.querySelector('[data-step="1"]').click();assert.equal(env.d.querySelector('#count-groom-haldi').value,'५०');assert.equal(env.d.querySelector('#count-groom-haldi').max,'50')});
+ test('countdown uses IST wedding date, has a date-only label and a post-date message',t=>{const env=setup({weddingTime:null});t.after(env.close);env.w.WeddingApp.updateCountdown(new Date('2027-02-09T18:29:00Z'));assert.equal(env.d.querySelector('#minutes').textContent,'01');assert.match(env.d.querySelector('#countdown-note').textContent,/विवाह तिथि के आरंभ तक/);env.w.WeddingApp.updateCountdown(new Date('2027-02-10T00:00:00Z'));assert.equal(env.d.querySelector('#days').textContent,'00');assert.match(env.d.querySelector('#countdown-note').textContent,/शुभारंभ हो चुका है/)});
+ test('gallery touch-friendly scrolling, lightbox navigation, close and restored focus',t=>{const env=setup();t.after(env.close);const{d,w}=env;assert.equal(d.querySelectorAll('.photo-memory').length,10);d.querySelector('#gallery-next').click();assert(d.querySelector('#photo-track').scrollLeft>0);const opener=d.querySelector('[data-photo="0"]');opener.focus();opener.click();assert(d.querySelector('#photo-dialog').open);const initial=d.querySelector('#lightbox-image').src;d.querySelector('#photo-next').click();assert.notEqual(d.querySelector('#lightbox-image').src,initial);d.querySelector('#photo-dialog').dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowLeft',bubbles:true}));assert.equal(d.querySelector('#lightbox-image').src,initial);d.querySelector('#photo-prev').click();assert.match(d.querySelector('#photo-counter').textContent,/10 \/ 10/);d.querySelector('#photo-close').click();assert(!d.querySelector('#photo-dialog').open);assert.equal(d.activeElement,opener);assert(!d.documentElement.classList.contains('album-open'))});
  test('music is hidden when unconfigured, never autoplays, and responds to explicit controls',async t=>{const silent=setup();t.after(silent.close);assert(silent.d.querySelector('#music-toggle').hidden);assert.equal(silent.audioPlays(),0);const env=setup({music:true});t.after(env.close);assert(!env.d.querySelector('#music-toggle').hidden);assert.equal(env.audioPlays(),0);env.d.querySelector('#music-toggle').click();await tick();assert.equal(env.audioPlays(),1);assert.equal(env.d.querySelector('#music-toggle').getAttribute('aria-pressed'),'true');env.d.querySelector('#music-toggle').click();await tick();assert.equal(env.d.querySelector('#music-toggle').getAttribute('aria-pressed'),'false')});
  test('mobile menu, assets, anchor targets, unique IDs, no network submissions and CSS syntax',t=>{
   const env=setup();t.after(env.close);const{d,w}=env;
@@ -121,7 +110,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   for(const image of d.querySelectorAll('img[src]'))assert(fs.existsSync(path.join(root,decodeURIComponent(image.getAttribute('src')))),image.src);
   for(const anchor of d.querySelectorAll('a[href^="#"]'))assert(d.querySelector(anchor.getAttribute('href')),anchor.href);
   const ids=[...d.querySelectorAll('[id]')].map(element=>element.id);assert.equal(new Set(ids).size,ids.length);
-  assert(!d.querySelector('#rsvp-form').hasAttribute('action'));assert(!/fetch\(|XMLHttpRequest|localStorage|sessionStorage/.test(fs.readFileSync(path.join(root,'script.js'),'utf8')));
+  assert(!d.querySelector('#rsvp-form'));assert(!/fetch\(|XMLHttpRequest|localStorage|sessionStorage/.test(fs.readFileSync(path.join(root,'script.js'),'utf8')));
   const source=fs.readFileSync(path.join(root,'style.css'),'utf8'),errors=[];cssTree.parse(source,{onParseError:error=>errors.push(error.message)});assert.deepEqual(errors,[]);assert.match(source,/\.scratch-card canvas\{[^}]*touch-action:none/);assert(!/body[^}]*touch-action:none/.test(source));assert.match(source,/@media\(prefers-reduced-motion:reduce\)/);assert.match(source,/@media\(max-width:360px\)/);assert.equal(env.errors.length,0);
  });
 
@@ -190,25 +179,12 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   checkCopy();w.WeddingApp.setSide('bride');checkCopy();w.WeddingApp.finishIntro({instant:true});w.WeddingApp.revealAllDates();d.querySelector('[data-photo="0"]').click();checkCopy();d.querySelector('#photo-close').click();
   assert(d.querySelector('link[href*="Noto+Serif+Devanagari"]'));
  });
- test('dates use normal English numerals while other Hindi numeric controls retain their display',t=>{
+ test('dates, countdown and photo counters use English numerals',t=>{
   const env=setup();t.after(env.close);const{d,w}=env;assert.equal(d.querySelector('#date-day').textContent,'10');assert.equal(d.querySelector('#date-year').textContent,'2027');assert.match(d.querySelector('#date-month').textContent,/फ़रवरी/);
-  for(const id of ['days','hours','minutes','seconds'])assert(/^[०-९]+$/.test(d.getElementById(id).textContent));
-  for(const input of d.querySelectorAll('[data-guest-count]'))assert.equal(input.value,'१');
-  d.querySelector('[data-photo="0"]').click();assert.equal(d.querySelector('#photo-counter').textContent,'०१ / १०');
+  for(const id of ['days','hours','minutes','seconds'])assert(/^[0-9]+$/.test(d.getElementById(id).textContent));
+
+  d.querySelector('[data-photo="0"]').click();assert.equal(d.querySelector('#photo-counter').textContent,'01 / 10');
   assert(!/[०-९]/.test(d.querySelector('#event-wedding .timeline-date').textContent));assert.match(d.querySelector('#event-wedding .timeline-date').textContent,/10.*2027/);
- });
- test('Hindi and Latin numeral input produce the same Hindi reply and preserve counts across family switches',async t=>{
-  const env=setup({clipboard:true});t.after(env.close);const{d,w}=env;d.querySelector('#guest-name').value='अदिति';selectEvent(env,'groom-haldi','१२');
-  const input=d.querySelector('#count-groom-haldi'),row=input.closest('.rsvp-event');row.querySelector('[data-step="1"]').click();assert.equal(input.value,'१३');input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowUp',bubbles:true,cancelable:true}));assert.equal(input.value,'१४');
-  submit(env,'#copy-rsvp');await tick();assert.match(env.copied[0],/शुभम की हल्दी — १४ अतिथि/);assert(!/[A-Za-z0-9]/.test(env.copied[0]));
-  w.WeddingApp.setSide('bride');w.WeddingApp.setSide('groom');assert.equal(d.querySelector('#count-groom-haldi').value,'१४');
-  const count=d.querySelector('#count-groom-haldi');count.value='15';count.dispatchEvent(new w.Event('input',{bubbles:true}));count.dispatchEvent(new w.Event('focusout',{bubbles:true}));assert.equal(count.value,'१५');submit(env,'#copy-rsvp');await tick();assert.match(env.copied[1],/१५ अतिथि/);
- });
- test('native form validation messages are Hindi and clear after correction',async t=>{
-  const env=setup({clipboard:true});t.after(env.close);const{d,w}=env;submit(env,'#copy-rsvp');const name=d.querySelector('#guest-name');assert.equal(name.validationMessage,'कृपया अपना नाम लिखें।');
-  name.value='अदिति';name.dispatchEvent(new w.Event('input',{bubbles:true}));assert.equal(name.validationMessage,'');selectEvent(env,'wedding',2);
-  const count=d.querySelector('#count-wedding');count.value='१२.५';count.dispatchEvent(new w.Event('input',{bubbles:true}));submit(env,'#copy-rsvp');assert.match(count.validationMessage,/१ से ५०/);assert.equal(env.copied.length,0);
-  count.value='३';count.dispatchEvent(new w.Event('input',{bubbles:true}));assert.equal(count.validationMessage,'');submit(env,'#copy-rsvp');await tick();assert.match(env.copied[0],/३ अतिथि/);
  });
  test('translation preserves the latest confirmed event facts and machine-readable calendar dates',t=>{
   const env=setup();t.after(env.close);const{w}=env,events=w.WEDDING.events;
@@ -218,13 +194,13 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   const ics=w.WeddingApp.calendarText(wedding);assert.match(ics,/SUMMARY:हिमांशी संग शुभम — शुभ विवाह/);assert.match(ics,/DTSTART:20270210T143000Z/);assert.match(ics,/LOCATION:शिवप्रिया फार्म्स\\, देहरादून/);
  });
 
- test('Himanshi’s confirmed schedule and RSVP follow the supplied sequence, with one combined mehendi-cocktail',t=>{
+ test('Himanshi’s confirmed schedule follows the supplied sequence, with one combined mehendi-cocktail',t=>{
   const env=setup({url:'http://localhost:5173/?side=bride'});t.after(env.close);const{d,w}=env;
   const expected=['bride-satsang','bride-keertan','bride-mehendi','bride-haldi','wedding','bride-vidaai'];
   assert.deepEqual([...w.WeddingApp.scheduleEvents('bride')].map(event=>event.id),expected);
   assert.deepEqual([...d.querySelectorAll('.timeline-event')].map(row=>row.id),expected.map(id=>'event-'+id));
-  assert.deepEqual([...d.querySelectorAll('#rsvp-events .rsvp-event')].map(row=>row.dataset.event),expected);
-  assert.equal(d.querySelectorAll('#attend-bride-mehendi').length,1);assert(!d.querySelector('#attend-bride-cocktail'));
+  assert(!d.querySelector('#rsvp-events'));
+
   assert.match(d.querySelector('#event-bride-mehendi h3').textContent,/मेहंदी एवं कॉकटेल/);assert(d.querySelector('.pending-events').hidden);
   w.WeddingApp.setSide('groom');assert.deepEqual([...d.querySelectorAll('.timeline-event')].map(row=>row.id),['event-groom-cocktail','event-groom-haldi','event-wedding']);
  });
@@ -255,14 +231,14 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   assert.equal(config.title,'सजना');assert.equal(config.source,'user-provided');assert.equal(config.licence,null,'Do not invent a licence statement');
   assert(fs.existsSync(path.join(root,decodeURIComponent(config.src))));assert(fs.statSync(path.join(root,decodeURIComponent(config.src))).size>1000000);
   const audio=d.querySelector('audio');assert.equal(audio.volume,.4);assert.equal(audio.preload,'none');assert(audio.loop);assert(!d.querySelector('#music-toggle').hidden);assert.equal(env.audioPlays(),0);
-  assert.equal(decodeURIComponent(new URL(audio.src).pathname),'/assets/Sajna - Darshan Raval, Dharal Surelia (Official Video).mp3');
+  assert.equal(decodeURIComponent(new URL(audio.src).pathname),'/assets/Sajna -Darshan Raval (Audio Song) #DD.mp3');
   d.querySelector('#music-toggle').click();await tick();assert.equal(env.audioPlays(),1);assert.equal(d.querySelector('#music-toggle').getAttribute('aria-pressed'),'true');d.querySelector('#music-toggle').click();await tick();assert.equal(d.querySelector('#music-toggle').getAttribute('aria-pressed'),'false');
  });
  test('the countdown and scratch-date details use the confirmed 8 PM wedding time',t=>{
   const env=setup();t.after(env.close);const{d,w}=env;
   assert.equal(d.querySelector('.date-time').textContent,'रात्रि 8:00 बजे');
-  w.WeddingApp.updateCountdown(new Date('2027-02-10T00:00:00Z'));assert.equal(d.querySelector('#hours').textContent,'१४');assert.equal(d.querySelector('#minutes').textContent,'३०');
-  w.WeddingApp.updateCountdown(new Date('2027-02-10T14:29:00Z'));assert.equal(d.querySelector('#minutes').textContent,'०१');assert.match(d.querySelector('#countdown-note').textContent,/रात्रि 8:00 बजे/);
+  w.WeddingApp.updateCountdown(new Date('2027-02-10T00:00:00Z'));assert.equal(d.querySelector('#hours').textContent,'14');assert.equal(d.querySelector('#minutes').textContent,'30');
+  w.WeddingApp.updateCountdown(new Date('2027-02-10T14:29:00Z'));assert.equal(d.querySelector('#minutes').textContent,'01');assert.match(d.querySelector('#countdown-note').textContent,/रात्रि 8:00 बजे/);
   w.WeddingApp.updateCountdown(new Date('2027-02-10T14:30:00Z'));assert.match(d.querySelector('#countdown-note').textContent,/शुभारंभ हो चुका है/);
  });
 
@@ -274,9 +250,9 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   assert.equal(d.querySelector('.formal-blessing').textContent,'पूज्य पितरों के आशीर्वाद से');assert.equal(d.querySelector('.formal-message').textContent,'के शुभ विवाह में आप सपरिवार सादर आमंत्रित हैं');
   assert(!d.querySelector('.formal-invite').textContent.includes('दो दिल, दो परिवार'));
  });
- test('the English H&S monogram is used consistently without replacing the Hindi names',t=>{
+ test('the supplied logo appears consistently without replacing the Hindi names',t=>{
   const env=setup();t.after(env.close);const{d}=env;
-  for(const logo of d.querySelectorAll('.opening-mark,.brand,.crest'))assert.equal(logo.textContent.replace(/\s+/g,''),'H&S');
+  for(const logo of d.querySelectorAll('.opening-mark,.brand,.crest'))assert.equal(logo.querySelector('img').getAttribute('src'),'assets/logo.png');
   assert.match(d.querySelector('.intro-welcome h1').textContent,/हिमांशी/);assert.match(d.querySelector('.intro-welcome h1').textContent,/शुभम/);
   assert.match(fs.readFileSync(path.join(root,'style.css'),'utf8'),/Cormorant Garamond/);
  });
@@ -300,4 +276,14 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   assert.notEqual(art.satsang.src,art.keertan.src);assert.notEqual(art.vidaai.src,art.wedding.src);
   assert.equal(d.querySelector('#event-bride-satsang .timeline-scene img').getAttribute('src'),art.satsang.src);assert.equal(d.querySelector('#event-bride-vidaai .timeline-scene img').getAttribute('src'),art.vidaai.src);
   assert(!fs.readFileSync(path.join(root,art.satsang.src)).equals(fs.readFileSync(path.join(root,art.keertan.src))));assert(!fs.readFileSync(path.join(root,art.vidaai.src)).equals(fs.readFileSync(path.join(root,art.wedding.src))));
+ });
+
+ test('invitation omits RSVP and travel advice and uses concise family event names',t=>{
+  const env=setup({url:'http://localhost:5173/?side=bride'});t.after(env.close);const{d}=env;
+  assert(!d.querySelector('form,#rsvp,[href="#rsvp"],.travel-grid'));
+  assert(!d.body.textContent.includes('कैसे पहुँचें'));
+  assert.deepEqual([...d.querySelectorAll('.timeline-event:not(#event-wedding) h3')].map(e=>e.textContent),['सत्संग','कीर्तन','मेहंदी एवं कॉकटेल','हल्दी','विदाई']);
+  assert(!d.querySelector('#story-copy').textContent.includes('जीवन के नए अध्याय'));
+  assert.match(d.querySelector('#story-copy').textContent,/सपरिवार आमंत्रित/);
+  assert.equal(env.errors.length,0);
  });

@@ -2,14 +2,12 @@
   'use strict';
   const config = window.WEDDING;
   const locale = config.locale || 'hi-IN-u-nu-latn';
-  const numberFormat = new Intl.NumberFormat(config.numberLocale || 'hi-IN-u-nu-deva',{useGrouping:false});
+  const numberFormat = new Intl.NumberFormat(config.numberLocale || 'hi-IN-u-nu-latn',{useGrouping:false});
   const dateNumberFormat = new Intl.NumberFormat(locale,{useGrouping:false});
   const formatDateNumber = value => dateNumberFormat.format(value);
   const padDateNumber = value => formatDateNumber(value).padStart(2,'0');
   const formatNumber = value => numberFormat.format(value);
-  const padNumber = value => formatNumber(value).padStart(2,'०');
-  const latinDigits = value => String(value).replace(/[०-९]/g,char => String(char.charCodeAt(0)-0x0966));
-  const parseGuestCount = value => /^\d+$/.test(latinDigits(value).trim()) ? Number(latinDigits(value).trim()) : NaN;
+  const padNumber = value => formatNumber(value).padStart(2,'0');
   const $ = selector => document.querySelector(selector);
   const $$ = selector => [...document.querySelectorAll(selector)];
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -108,7 +106,7 @@
       state.pointerId = null;
     }
     const revealed = scratchStates.filter(item => item.revealed).length;
-    $('#scratch-status').textContent = `३ में से ${formatNumber(revealed)} तिथिपत्र खुले हैं।`;
+    $('#scratch-status').textContent = `3 में से ${formatNumber(revealed)} तिथिपत्र खुले हैं।`;
     if (scratchStates.length === 3 && revealed === 3) {
       $('#date-details').hidden = false;
       $('#reveal-date').textContent = 'इस तिथि को सहेज लीजिए ✧';
@@ -342,33 +340,14 @@
     if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy))showPhoto(photoIndex+(dx<0?1:-1));touchStart=null;
   },{passive:true});
 
-  // The same family state drives the celebration timeline and RSVP options.
-  let activeSide='groom'; const attendance=new Map();
-  const form=$('#rsvp-form');
-  function rememberAttendance() {
-    $$('#rsvp-events .rsvp-event').forEach(row=>attendance.set(row.dataset.event,{selected:row.querySelector('[type=checkbox]').checked,count:parseGuestCount(row.querySelector('[data-guest-count]').value)}));
-  }
-  function renderRsvpEvents() {
-    const entries=scheduleEvents(activeSide);
-    $('#rsvp-events').innerHTML=entries.map(event=>{
-      const saved=attendance.get(event.id)||{selected:false,count:1};
-      const selected=saved.selected;
-      return `<div class="rsvp-event" data-event="${event.id}"><label for="attend-${event.id}"><input type="checkbox" id="attend-${event.id}" ${selected?'checked':''}><span><strong>${escapeHTML(event.title)}</strong><small>${escapeHTML(dateLabel(event))}${event.side==='shared'?' · दोनों परिवार':''}</small></span></label><div class="guest-stepper"><button type="button" data-step="-1" aria-label="एक अतिथि कम करें: ${escapeHTML(event.title)}" ${selected?'':'disabled'}>−</button><input type="text" inputmode="numeric" data-guest-count role="spinbutton" aria-valuemin="1" aria-valuemax="50" aria-valuenow="${Number.isFinite(saved.count)?saved.count:1}" id="count-${event.id}" min="1" max="50" pattern="[०-९0-9]+" value="${Number.isFinite(saved.count)?formatNumber(saved.count):''}" aria-label="आने वाले अतिथियों की संख्या: ${escapeHTML(event.title)}" ${selected?'':'disabled'}><button type="button" data-step="1" aria-label="एक अतिथि बढ़ाएँ: ${escapeHTML(event.title)}" ${selected?'':'disabled'}>+</button></div></div>`;
-    }).join('');
-    const contact=config.families[activeSide].contact;
-    const validContact=typeof contact==='string'&&/^[1-9]\d{7,14}$/.test(contact);
-    $('#send-whatsapp').disabled=!validContact;
-    $('#contact-note').textContent=validContact?`आपका उत्तर ${config.families[activeSide].name} के परिवार के लिए व्हाट्सऐप पर खुलेगा। भेजने से पहले जाँच लें।`:`${config.families[activeSide].name} के परिवार का व्हाट्सऐप संपर्क शीघ्र साझा किया जाएगा। तब तक अपने उत्तर की प्रतिलिपि बनाकर अपने मेज़बान को भेजें।`;
-  }
-  function setSide(requested,{updateUrl=true,remember=true}={}) {
+  // Family selection updates the timeline and preserves shareable links.
+  let activeSide='groom';
+  function setSide(requested,{updateUrl=true}={}) {
     const side=requested==='bride'?'bride':'groom';
-    if(remember)rememberAttendance();
     activeSide=side;
     $$('[data-side]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.side===side)));
-    $('#rsvp-side').value=side;
     renderCelebrations(side);
-    $('#side-status').textContent=`${config.families[side].name} का परिवार · शुभ विवाह दोनों परिवारों का साझा उत्सव है।`;
-    renderRsvpEvents();$('#rsvp-error').textContent='';$('#rsvp-status').textContent='';$('#copy-fallback').hidden=true;
+    $('#side-status').textContent=`${config.families[side].name} के समारोह · शुभ विवाह दोनों परिवारों का है।`;
     animate($('#celebration-timeline'),[{opacity:.45},{opacity:1}],{duration:450,easing:'ease-out'});
     if(updateUrl){
       const url=new URL(window.location.href);url.searchParams.set('side',side);
@@ -376,77 +355,8 @@
     }
   }
   $$('[data-side]').forEach(button=>button.addEventListener('click',()=>setSide(button.dataset.side)));
-  $('#rsvp-side').addEventListener('change',event=>setSide(event.target.value));
-  setSide(new URL(window.location.href).searchParams.get('side'),{updateUrl:false,remember:false});
+  setSide(new URL(window.location.href).searchParams.get('side'),{updateUrl:false});
   window.addEventListener('popstate',()=>setSide(new URL(window.location.href).searchParams.get('side'),{updateUrl:false}));
-  $('#rsvp-events').addEventListener('change',event=>{
-    const row=event.target.closest('.rsvp-event');if(!row)return;
-    if(event.target.type==='checkbox')row.querySelectorAll('.guest-stepper button,.guest-stepper input').forEach(control=>control.disabled=!event.target.checked);
-    rememberAttendance();$('#rsvp-error').textContent='';
-  });
-  $('#rsvp-events').addEventListener('input',event=>{
-    if(event.target.matches('[data-guest-count]')){
-      event.target.setCustomValidity('');
-      const value=parseGuestCount(event.target.value);
-      if(Number.isFinite(value))event.target.setAttribute('aria-valuenow',String(value));
-    }
-    rememberAttendance();
-  });
-  $('#rsvp-events').addEventListener('keydown',event=>{
-    if(!event.target.matches('[data-guest-count]')||!['ArrowUp','ArrowDown'].includes(event.key))return;
-    event.preventDefault();
-    const step=event.key==='ArrowUp'?'1':'-1';event.target.closest('.guest-stepper').querySelector(`[data-step="${step}"]`).click();
-  });
-  $('#rsvp-events').addEventListener('focusout',event=>{
-    if(!event.target.matches('[data-guest-count]'))return;
-    const value=parseGuestCount(event.target.value);if(Number.isFinite(value))event.target.value=formatNumber(value);
-  });
-  $('#guest-name').addEventListener('input',event=>event.target.setCustomValidity(''));
-  form.addEventListener('invalid',event=>{
-    if(event.target.id==='guest-name')event.target.setCustomValidity('कृपया अपना नाम लिखें।');
-    if(event.target.matches('[data-guest-count]'))event.target.setCustomValidity('कृपया १ से ५० के बीच पूरी अतिथि संख्या लिखें।');
-  },true);
-  $('#rsvp-events').addEventListener('click',event=>{
-    const button=event.target.closest('[data-step]');if(!button)return;
-    const input=button.closest('.guest-stepper').querySelector('input');
-    input.value=formatNumber(Math.max(1,Math.min(50,(parseGuestCount(input.value)||1)+Number(button.dataset.step))));input.setAttribute('aria-valuenow',String(parseGuestCount(input.value)));input.setCustomValidity('');rememberAttendance();
-  });
-  function makeRsvpMessage({name,side,entries,message=''}) {
-    return ['विवाह में उपस्थिति की पुष्टि · हिमांशी संग शुभम',`अतिथि: ${name.trim()}`,`परिवार: ${config.families[side].name} के समारोह`,'','हम निम्न समारोहों में शामिल होंगे:',...entries.map(({event,count})=>`• ${event.title} — ${formatNumber(count)} अतिथि (${dateLabel(event)})`),message.trim()?`\nसंदेश: ${message.trim()}`:'','\nसप्रेम!'].filter(line=>line!==null).join('\n');
-  }
-  function validateReply() {
-    $('#rsvp-error').textContent='';
-    if(!form.reportValidity())return null;
-    const name=$('#guest-name').value.trim();
-    if(!name){$('#rsvp-error').textContent='कृपया अपना नाम लिखें।';$('#guest-name').focus();return null;}
-    rememberAttendance();
-    const entries=scheduleEvents(activeSide).filter(event=>attendance.get(event.id)?.selected).map(event=>({event,count:attendance.get(event.id).count}));
-    if(!entries.length){$('#rsvp-error').textContent='कृपया कम से कम एक समारोह चुनें।';$('#rsvp-events input[type=checkbox]').focus();return null;}
-    const invalid=entries.find(entry=>!Number.isInteger(entry.count)||entry.count<1||entry.count>50);
-    if(invalid){$('#rsvp-error').textContent='हर चुने गए समारोह के लिए १ से ५० के बीच पूरी अतिथि संख्या लिखें।';$('#count-'+invalid.event.id).focus();return null;}
-    return makeRsvpMessage({name,side:activeSide,entries,message:$('#guest-message').value});
-  }
-  async function copyReply(message) {
-    try {
-      if(!navigator.clipboard?.writeText)throw new Error('Clipboard not available');
-      await navigator.clipboard.writeText(message);$('#rsvp-status').textContent='आपके उत्तर की प्रतिलिपि बन गई है। जब चाहें, इसे अपने मेज़बान से साझा करें।';toast('आपके उत्तर की प्रतिलिपि बन गई है। अभी कुछ भी भेजा नहीं गया है।');
-    } catch (_) {
-      $('#copy-fallback').hidden=false;$('#reply-text').value=message;$('#reply-text').focus();$('#reply-text').select();
-      $('#rsvp-status').textContent='नीचे का संदेश चुनकर प्रतिलिपि बनाएँ, फिर अपने मेज़बान से साझा करें।';
-    }
-  }
-  form.addEventListener('submit',async event=>{
-    event.preventDefault();const message=validateReply();if(!message)return;
-    const action=event.submitter?.value || 'copy';
-    if(action==='copy'){await copyReply(message);return;}
-    const number=config.families[activeSide].contact;
-    if(typeof number!=='string'||!/^[1-9]\d{7,14}$/.test(number)){
-      $('#rsvp-error').textContent='परिवार का संपर्क अभी उपलब्ध नहीं है। कृपया “उत्तर की प्रतिलिपि बनाएँ” चुनें।';return;
-    }
-    const url=`https://wa.me/${number}?text=${encodeURIComponent(message)}`;
-    window.open(url,'_blank','noopener,noreferrer');
-    $('#rsvp-status').textContent='आपका तैयार संदेश व्हाट्सऐप पर खुलेगा। वहाँ उसे जाँचकर स्वयं भेजें; इस वेबसाइट ने आपका उत्तर नहीं भेजा है।';
-  });
 
   // User-configured audio: playback only starts on an explicit music-button click.
   const audio=$('#background-music'),musicButton=$('#music-toggle');
@@ -469,5 +379,5 @@
   }
 
   // Small public surface for deterministic checks and local content previews.
-  window.WeddingApp={setSide,finishIntro,startIntro,revealAllDates,calendarText,makeRsvpMessage,updateCountdown,scheduleEvents,updateTimelineProgress,getState:()=>({side:activeSide,intro:introState,scratched:scratchStates.map(state=>state.revealed)} )};
+  window.WeddingApp={setSide,finishIntro,startIntro,revealAllDates,calendarText,updateCountdown,scheduleEvents,updateTimelineProgress,getState:()=>({side:activeSide,intro:introState,scratched:scratchStates.map(state=>state.revealed)} )};
 })();

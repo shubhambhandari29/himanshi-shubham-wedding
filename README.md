@@ -1,3 +1,5 @@
+> Current revision: Latin digits throughout, supplied illustrated logo and replacement MP3; RSVP and travel advice removed. Event titles are concise and invitation copy simplified.
+
 > नवीन संपादन: तिथियाँ और घड़ी का समय अब 0–9 अंकों में हैं; H&S लोगो अंग्रेज़ी में है। मुख्य पाठ हिंदी में है। माता-पिता का परिचय और सत्संग/विदाई के नए चित्र जोड़े गए हैं। इस संस्करण का प्रकाशन 13 नवंबर 2026 को अधिकृत किया गया है; GitHub Pages इसे `main` से उपलब्ध कराता है।
 
 # हिंदी देवनागरी संस्करण
@@ -31,15 +33,11 @@ GitHub Pages serves the invitation from `main`. Live website: https://shubhambha
 - Himanshi's confirmed events: Satsang on 8 February at 11 AM; Keertan on 8 February at 2 PM; combined Mehendi and Cocktail on 9 February at 8 PM at Sky Garden, Jogiwala; Haldi on 10 February at 11 AM at home; shared wedding on 10 February at 8 PM; Vidaai after the wedding, labelled ‘तारों की छाँव में’. Groom-side pre-wedding dates and venues remain unconfirmed.
 - The couple confirmed the bride-side home address as Lane No 11, Indraprastha Colony, near 6 Number Puliya, Jogiwala, Dehradun. `homeVenue` supplies one shared address for Satsang, Keertan and Haldi. Earlier unassigned placeholders have been superseded: Haldi is 11 AM (not the older 10 AM), and Mehendi/Cocktail are one combined event. The empty pending-details disclosure is hidden.
 - Family members and relationships are empty until verified. Accommodation and exact street addresses have not been invented. Dress details remain unconfirmed.
-- Add confirmed contacts as international digits (e.g. an Indian phone number prefixed with `91`). Until then, the WhatsApp action is disabled and the copy-reply option remains available.
+- RSVP and guest reply controls have been removed at the couple’s request.
 - The supplied Sajna MP3 is configured via its actual filename, with `enabled: true` and an initial volume of 0.4. Playback starts only after the music button is tapped; it loops and can be paused. Audio provenance is recorded as user-provided; licence metadata remains unspecified rather than inventing a permission statement. A null source or `enabled: false` hides the control.
 - Ambient motion, intro duration, scratch brush size, and the completion threshold are adjustable. All motion respects reduced-motion preferences.
 
-The opening and scratch state remain in memory during page navigation. RSVP selections are retained per function while switching family views, without browser storage. Reloading starts a new visit.
-
-## RSVP privacy and behaviour
-
-Guests enter their name, choose functions, set a count for each, and optionally add a note. The site validates the draft locally. “Send on WhatsApp” opens an encoded message for the selected family; the guest reviews and sends it in WhatsApp. The website itself does not submit replies. Missing/denied clipboard access falls back to a visible, selectable message. Tests never send an RSVP.
+The opening and scratch state remain in memory during page navigation. Reloading starts a new visit.
 
 ## Verification
 
@@ -56,7 +54,7 @@ See [docs/VERIFICATION.md](docs/VERIFICATION.md) for the tested behaviours and r
 
 - `index.html`: accessible invitation structure and static fallbacks
 - `style.css`: watercolour design, motion, reduced-motion and narrow-screen layouts
-- `script.js`: opening, scratch canvases, event rendering, album, countdown, calendars, RSVP and optional music
+- `script.js`: opening, scratch canvases, event rendering, album, countdown, calendars and optional music
 - `content.js`: editable content and confirmed facts
 - `assets/`: original photos/artwork plus lightweight transparent WebP artwork
 - `tests/invitation.test.cjs`: reproducible interaction and integrity checks

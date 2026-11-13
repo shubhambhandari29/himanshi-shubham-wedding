@@ -378,3 +378,11 @@ html[lang=hi] .formal-invite .formal-name{font-family:var(--script);font-size:58
 html[lang=hi] .formal-invite .formal-message{max-width:420px;margin:25px auto 0;line-height:2.1}
 @media(max-width:600px){html[lang=hi] .opening-mark{font-size:29px}html[lang=hi] .brand{font-size:30px}html[lang=hi] .crest{font-size:33px}html[lang=hi] .opening-mark>span,html[lang=hi] .brand>span,html[lang=hi] .crest>span{font-size:20px}.formal-couple{margin:20px auto}.formal-relation{font-size:13px;line-height:1.9;margin-bottom:6px}.formal-parents{font-size:16px;line-height:2.1}.formal-join{font-size:23px;margin:16px 0}html[lang=hi] .formal-invite .formal-name{font-size:43px;line-height:1.65;margin-bottom:4px}html[lang=hi] .formal-invite .formal-message{font-size:17px;line-height:2.1;max-width:270px;margin-top:22px}}
 @media(max-width:359px){html[lang=hi] .formal-invite .formal-name{font-size:38px}.formal-parents{font-size:15px}.formal-relation{font-size:12px}}
+
+/* Supplied illustrated wedding emblem, shown uncropped at each scale. */
+.couple-logo{display:block;width:100%;height:100%;object-fit:contain}
+html[lang=hi] .opening-mark{width:100px;height:100px;border:0;background:none}
+html[lang=hi] .brand{display:block;width:66px;height:66px;flex-shrink:0}
+html[lang=hi] .crest{width:180px;height:180px;padding:0;border:0;border-radius:0;background:none;margin:0 auto 22px}
+html[lang=hi] .closing-section .crest{width:150px;height:150px;margin:25px auto 0}
+@media(max-width:600px){html[lang=hi] .opening-mark{width:82px;height:82px}html[lang=hi] .brand{width:56px;height:56px}html[lang=hi] .crest{width:150px;height:150px}html[lang=hi] .closing-section .crest{width:130px;height:130px}}
