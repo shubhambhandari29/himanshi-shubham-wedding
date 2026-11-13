@@ -62,8 +62,9 @@
   // Opening state lives in memory; ordinary page navigation and side switches never replay it.
   const opening = $('.water-opening');
   const tapButton = $('#water-tap');
-  const skipButton = $('#skip-intro');
-  let introState = 'idle', introTimer;
+  const skipButton = $('#skip-intro'), replayButton=$('#replay-intro');
+  const boatImage=$('.boat-bob>img'), boatRoute=$('.boat-route');
+  let introState = 'idle', introTimer, introLoadTimer, introAttempt=0, introFocusRequested=false;
   opening.style.setProperty('--intro-duration', `${config.motion.introDuration}ms`);
   opening.style.setProperty('--leaf-period', `${config.motion.leafDuration}ms`);
   opening.style.setProperty('--bob-period', `${config.motion.boatBobDuration}ms`);
@@ -72,32 +73,66 @@
   if (!config.motion.ambient) opening.classList.add('still-water');
   function finishIntro({instant = false} = {}) {
     if (introState === 'revealed') return;
-    clearTimeout(introTimer);
+    clearTimeout(introTimer);clearTimeout(introLoadTimer);introAttempt++;
     introState = 'revealed';
     if (instant || motion.matches) opening.classList.add('instant');
     opening.dataset.stage = 'revealed';
     $('.intro-initial').setAttribute('aria-hidden','true');
     $('.intro-welcome').setAttribute('aria-hidden','false');
     $('.scroll-cue').removeAttribute('tabindex');
-    const focusWasOpening = document.activeElement === tapButton || document.activeElement === skipButton;
-    tapButton.hidden = true; skipButton.hidden = true;
+    const focusWasOpening = introFocusRequested || document.activeElement === tapButton || document.activeElement === skipButton;
+    introFocusRequested=false;
+    tapButton.hidden = true; skipButton.hidden = true;tapButton.removeAttribute('aria-busy');
+    replayButton.hidden=false;replayButton.innerHTML=`${icon('play')} ${motion.matches?'नाव का दृश्य चलाएँ':'नाव फिर चलाएँ'}`;
+    delete opening.dataset.manualMotion;
+    $('#intro-motion-hint').textContent=motion.matches?'आपके डिवाइस की गति कम रखने की पसंद का सम्मान किया गया है। इस बटन से केवल नाव का दृश्य अपनी इच्छा से चला सकते हैं।':'नाव का दृश्य दोबारा देखें। निमंत्रण की बाकी जानकारी वैसी ही रहेगी।';
     $('.intro-status').textContent = 'हिमांशी संग शुभम के शुभ विवाह में आपका स्वागत है। निमंत्रण देखने के लिए नीचे जाएँ।';
     if (focusWasOpening) $('.scroll-cue').focus({preventScroll:true});
   }
-  function startIntro(event) {
-    if (introState !== 'idle') return;
-    if (motion.matches) { finishIntro({instant:true}); return; }
+  function beginSailing(event,forceMotion,attempt){
+    if(attempt!==introAttempt || introState==='revealed')return;
+    clearTimeout(introLoadTimer);tapButton.removeAttribute('aria-busy');
+    if(motion.matches&&!forceMotion){finishIntro({instant:true});return;}
     const rect = opening.getBoundingClientRect();
     const ripple = document.createElement('span'); ripple.className = 'water-ripple'; ripple.setAttribute('aria-hidden','true');
     const pointer = event?.detail !== 0 && Number.isFinite(event?.clientX);
     ripple.style.left = `${pointer ? event.clientX - rect.left : rect.width / 2}px`;
     ripple.style.top = `${pointer ? event.clientY - rect.top : rect.height * .6}px`;
     opening.append(ripple); setTimeout(() => ripple.remove(),config.motion.rippleDuration + 100);
+    if(forceMotion)opening.dataset.manualMotion='true';
+    // Flush the resting transform before applying the destination (including Safari replays).
+    void boatRoute.getBoundingClientRect();
     introState = 'sailing'; opening.dataset.stage = 'sailing';
     $('.intro-initial').setAttribute('aria-hidden','true'); $('.intro-welcome').setAttribute('aria-hidden','false');
     tapButton.disabled = true;
     introTimer = setTimeout(() => finishIntro(), config.motion.introDuration);
   }
+  function startIntro(event,{forceMotion=false}={}) {
+    if(introState!=='idle')return;
+    if(motion.matches&&!forceMotion){finishIntro({instant:true});return;}
+    const attempt=++introAttempt;
+    introFocusRequested=document.activeElement===tapButton||document.activeElement===replayButton;
+    tapButton.disabled=true;
+    if(typeof boatImage.decode==='function'&&(!boatImage.complete||!boatImage.naturalWidth)){
+      introState='loading';opening.dataset.stage='loading';tapButton.setAttribute('aria-busy','true');
+      $('.intro-status').textContent='नाव का चित्र तैयार हो रहा है। चाहें तो सीधे निमंत्रण देखें।';
+      introLoadTimer=setTimeout(()=>{if(attempt===introAttempt)finishIntro({instant:true});},10000);
+      Promise.resolve().then(()=>boatImage.decode()).then(()=>beginSailing(event,forceMotion,attempt),()=>{if(attempt===introAttempt)finishIntro({instant:true});});
+      return;
+    }
+    beginSailing(event,forceMotion,attempt);
+  }
+  function replayIntro(event){
+    if(introState!=='revealed')return;
+    introState='idle';opening.classList.add('instant');delete opening.dataset.manualMotion;opening.dataset.stage='idle';
+    $('.intro-initial').setAttribute('aria-hidden','false');$('.intro-welcome').setAttribute('aria-hidden','true');
+    $('.scroll-cue').setAttribute('tabindex','-1');
+    tapButton.hidden=false;tapButton.disabled=false;skipButton.hidden=false;
+    // Commit the reset without animation, then enable only the requested one-shot boat movement.
+    void boatRoute.getBoundingClientRect();opening.classList.remove('instant');
+    startIntro(event,{forceMotion:true});replayButton.hidden=true;
+  }
+  replayButton.addEventListener('click',replayIntro);
   tapButton.addEventListener('click',startIntro);
   skipButton.addEventListener('click',() => finishIntro({instant:true}));
   if (motion.matches) finishIntro({instant:true});
@@ -448,5 +483,5 @@
   }
 
   // Small public surface for deterministic checks and local content previews.
-  window.WeddingApp={setSide,finishIntro,startIntro,revealAllDates,calendarText,updateCountdown,scheduleEvents,updateTimelineProgress,groupEvents,renderContacts,getState:()=>({side:activeSide,intro:introState,scratched:scratchStates.map(state=>state.revealed)} )};
+  window.WeddingApp={setSide,finishIntro,startIntro,replayIntro,revealAllDates,calendarText,updateCountdown,scheduleEvents,updateTimelineProgress,groupEvents,renderContacts,getState:()=>({side:activeSide,intro:introState,scratched:scratchStates.map(state=>state.revealed)} )};
 })();

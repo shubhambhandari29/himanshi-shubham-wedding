@@ -500,3 +500,8 @@ html[lang=hi] .formal-rule{margin:16px auto}
   html[lang=hi] .formal-invite{padding-top:40px;padding-bottom:30px}
   html[lang=hi] .formal-invite .crest{width:min(220px,100%);height:auto;aspect-ratio:1;margin-bottom:10px}
 }
+
+/* Explicit replay opts into only the boat transition, never ambient motion site-wide. */
+.water-opening[data-manual-motion=true] .boat-route{transition:transform var(--intro-duration,4800ms) cubic-bezier(.32,.04,.22,1)!important}
+.water-opening[data-stage=loading] .tap-cue{opacity:.7}
+@supports not (height:100svh){.water-opening{height:100vh}}

@@ -471,3 +471,28 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   for(const side of ['groom','bride']){w.WeddingApp.setSide(side);for(const row of d.querySelectorAll('.timeline-event')){const primary=row.querySelector('.timeline-actions>a'),secondary=row.querySelector('.timeline-actions>button');if(primary){assert.notEqual(w.getComputedStyle(primary).backgroundColor,'rgba(0, 0, 0, 0)');assert(parseFloat(w.getComputedStyle(primary).minHeight)>=44);}if(secondary){assert.equal(w.getComputedStyle(secondary).backgroundColor,'rgba(0, 0, 0, 0)');assert(parseFloat(w.getComputedStyle(secondary).minHeight)>=44);}}}
   const headingStyle=w.getComputedStyle(d.querySelector('#celebrations-heading'));assert(parseFloat(headingStyle.wordSpacing)>0&&parseFloat(headingStyle.wordSpacing)<parseFloat(headingStyle.fontSize)*.25);assert.equal(w.getComputedStyle(d.querySelector('#celebrations-heading')).letterSpacing,'normal');assert.equal(w.getComputedStyle(d.querySelector('#our-story')).paddingTop,'38px');assert.equal(w.getComputedStyle(d.querySelector('.formal-invite')).paddingTop,'46px');
  });
+
+ test('reduced-motion visitors can explicitly play the boat once without disabling their site-wide preference',t=>{
+  const env=setup({reduced:true});t.after(env.close);const{d,w}=env,opening=d.querySelector('.water-opening'),replay=d.querySelector('#replay-intro');
+  assert.equal(w.WeddingApp.getState().intro,'revealed');assert(!replay.hidden);assert.match(replay.textContent,/नाव का दृश्य चलाएँ/);assert.match(d.querySelector('#intro-motion-hint').textContent,/गति कम/);
+  replay.focus();replay.click();assert.equal(w.WeddingApp.getState().intro,'sailing');assert.equal(opening.dataset.manualMotion,'true');assert(!opening.classList.contains('instant'));assert(replay.hidden);assert(!d.querySelector('#skip-intro').hidden);
+  d.querySelector('#skip-intro').click();assert.equal(w.WeddingApp.getState().intro,'revealed');assert.equal(opening.dataset.manualMotion,undefined);assert(!replay.hidden);assert.equal(d.activeElement,d.querySelector('.scroll-cue'));
+  w.WeddingApp.setSide('bride');assert.equal(w.WeddingApp.getState().intro,'revealed');assert.equal(env.errors.length,0);
+ });
+ test('normal visitors can replay after opening without resetting the family, scratched date or invitation state',t=>{
+  const env=setup();t.after(env.close);const{d,w}=env;
+  assert(d.querySelector('#replay-intro').hidden);w.WeddingApp.finishIntro({instant:true});w.WeddingApp.revealAllDates();w.WeddingApp.setSide('bride');
+  d.querySelector('#replay-intro').click();assert.equal(w.WeddingApp.getState().intro,'sailing');assert.equal(w.WeddingApp.getState().side,'bride');assert.deepEqual([...w.WeddingApp.getState().scratched],[true,true,true]);
+  d.querySelector('#skip-intro').click();assert(!d.querySelector('#replay-intro').hidden);assert.equal(w.WeddingApp.getState().intro,'revealed');assert.equal(env.errors.length,0);
+ });
+ test('slow boat image decoding delays the animation instead of letting it finish before the picture arrives',async t=>{
+  const env=setup();t.after(env.close);const{d,w}=env;let ready;
+  d.querySelector('.boat-bob>img').decode=()=>new Promise(resolve=>{ready=resolve});
+  d.querySelector('#water-tap').click();assert.equal(w.WeddingApp.getState().intro,'loading');assert.equal(d.querySelector('#water-tap').getAttribute('aria-busy'),'true');await tick();ready();await tick();
+  assert.equal(w.WeddingApp.getState().intro,'sailing');assert(!d.querySelector('#water-tap').hasAttribute('aria-busy'));assert.equal(env.errors.length,0);
+ });
+ test('skip and failed decoding always leave a usable invitation; late image completion cannot restart the opening',async t=>{
+  const env=setup();t.after(env.close);const{d,w}=env;let ready;
+  d.querySelector('.boat-bob>img').decode=()=>new Promise(resolve=>{ready=resolve});d.querySelector('#water-tap').click();await tick();d.querySelector('#skip-intro').click();ready();await tick();assert.equal(w.WeddingApp.getState().intro,'revealed');assert(!d.querySelector('#replay-intro').hidden);
+  d.querySelector('.boat-bob>img').decode=async()=>{throw new Error('Image unavailable')};d.querySelector('#replay-intro').click();await tick();assert.equal(w.WeddingApp.getState().intro,'revealed');assert(!d.querySelector('#replay-intro').hidden);assert(!d.querySelector('#water-tap').hasAttribute('aria-busy'));assert.equal(env.errors.length,0);
+ });
