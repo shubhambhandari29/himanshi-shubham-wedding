@@ -253,7 +253,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
  });
  test('the supplied logo appears consistently without replacing the Hindi names',t=>{
   const env=setup();t.after(env.close);const{d}=env;
-  for(const logo of d.querySelectorAll('.opening-mark,.brand,.crest'))assert.equal(logo.querySelector('img').getAttribute('src'),'assets/logo.png');
+  for(const logo of d.querySelectorAll('.opening-mark,.brand,.crest'))assert.equal(logo.querySelector('img').getAttribute('src'),logo.matches('.crest')?'assets/logo-emblem.webp':'assets/logo-monogram.webp');
   assert.match(d.querySelector('.intro-welcome h1').textContent,/हिमांशी/);assert.match(d.querySelector('.intro-welcome h1').textContent,/शुभम/);
   assert.match(fs.readFileSync(path.join(root,'style.css'),'utf8'),/Cormorant Garamond/);
  });
@@ -319,4 +319,18 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   assert(!d.querySelector('#location-heading'));assert(!d.querySelector('#location .small-note'));assert(!d.querySelector('#location').textContent.includes('मिलते हैं देहरादून में'));assert(!d.body.textContent.includes('विस्तृत पता और आगमन की जानकारी शीघ्र साझा की जाएगी'));
   assert.equal(card.querySelector('h3').textContent,w.WEDDING.events.find(e=>e.id==='wedding').venue.name);assert.match(card.querySelector('#wedding-venue-schedule').textContent,/10.*2027/);assert.match(card.querySelector('#wedding-venue-schedule').textContent,/रात्रि 8:00 बजे/);
   assert.equal(card.querySelector('img').getAttribute('src'),'assets/venues/shivpriya-watercolor.webp');assert(!card.querySelector('.venue-house'));assert.match(card.querySelector('[data-map]').href,/Shivpriya%20Farms/);assert.equal(env.errors.length,0);
+ });
+
+ test('logo assets contain real transparency and every visible logo uses the new files',async t=>{
+  const {loadImage}=require('@napi-rs/canvas');const env=setup();t.after(env.close);
+  for(const file of ['logo-emblem.webp','logo-monogram.webp']){
+    const image=await loadImage(path.join(root,'assets',file));const canvas=createCanvas(image.width,image.height),ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);
+    const pixels=ctx.getImageData(0,0,image.width,image.height).data;let transparent=0,visible=0;
+    for(let i=3;i<pixels.length;i+=4){if(pixels[i]===0)transparent++;if(pixels[i]>200)visible++;}
+    assert(transparent>image.width*image.height*.2,`${file} must have transparent blank space`);assert(visible>image.width*image.height*.03,`${file} must retain visible artwork`);
+    for(const[x,y]of [[0,0],[image.width-1,0],[0,image.height-1],[image.width-1,image.height-1]])assert.equal(ctx.getImageData(x,y,1,1).data[3],0);
+  }
+  const logos=env.d.querySelectorAll('.couple-logo,.compact-logo');assert.equal(logos.length,6);
+  assert([...logos].every(img=>/assets\/logo-(emblem|monogram)\.webp$/.test(img.getAttribute('src'))));
+  assert(!env.d.querySelector('img[src="assets/logo.png"]'));
  });

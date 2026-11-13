@@ -379,16 +379,17 @@ html[lang=hi] .formal-invite .formal-message{max-width:420px;margin:25px auto 0;
 @media(max-width:600px){html[lang=hi] .opening-mark{font-size:29px}html[lang=hi] .brand{font-size:30px}html[lang=hi] .crest{font-size:33px}html[lang=hi] .opening-mark>span,html[lang=hi] .brand>span,html[lang=hi] .crest>span{font-size:20px}.formal-couple{margin:20px auto}.formal-relation{font-size:13px;line-height:1.9;margin-bottom:6px}.formal-parents{font-size:16px;line-height:2.1}.formal-join{font-size:23px;margin:16px 0}html[lang=hi] .formal-invite .formal-name{font-size:43px;line-height:1.65;margin-bottom:4px}html[lang=hi] .formal-invite .formal-message{font-size:17px;line-height:2.1;max-width:270px;margin-top:22px}}
 @media(max-width:359px){html[lang=hi] .formal-invite .formal-name{font-size:38px}.formal-parents{font-size:15px}.formal-relation{font-size:12px}}
 
-/* Supplied illustrated wedding emblem, shown uncropped at each scale. */
-.couple-logo{display:block;width:100%;height:100%;object-fit:contain}
-html[lang=hi] .opening-mark{width:100px;height:100px;border:0;background:none}
-html[lang=hi] .brand{display:block;width:66px;height:66px;flex-shrink:0}
-html[lang=hi] .crest{width:180px;height:180px;padding:0;border:0;border-radius:0;background:none;margin:0 auto 22px}
-html[lang=hi] .closing-section .crest{width:150px;height:150px;margin:25px auto 0}
-@media(max-width:600px){html[lang=hi] .opening-mark{width:82px;height:82px}html[lang=hi] .brand{width:56px;height:56px}html[lang=hi] .crest{width:150px;height:150px}html[lang=hi] .closing-section .crest{width:130px;height:130px}}
-
-/* Blend the supplied paper texture into the invitation, with no square edge. */
-.couple-logo{mix-blend-mode:multiply;-webkit-mask-image:radial-gradient(ellipse at center,#000 53%,transparent 73%);mask-image:radial-gradient(ellipse at center,#000 53%,transparent 73%)}
+/* Real alpha-transparent artwork; detailed emblems stay large, compact marks stay legible. */
+.couple-logo,.compact-logo{display:block;width:100%;height:100%;object-fit:contain;mix-blend-mode:normal;mask-image:none;-webkit-mask-image:none}
+html[lang=hi] .opening-mark{width:78px;height:78px;border:0;outline:0;background:transparent}
+html[lang=hi] .brand{display:block;width:66px;height:66px;padding:0;flex-shrink:0;background:transparent}
+html[lang=hi] .crest{display:block;width:260px;height:260px;padding:0;border:0;outline:0;border-radius:0;background:transparent;margin:0 auto 22px}
+html[lang=hi] .closing-section .crest{width:230px;height:230px;margin:25px auto 0}
+.album-brand,.footer-brand{display:flex;align-items:center;gap:14px}
+.album-brand .compact-logo{width:52px;height:52px;filter:brightness(1.65)}
+.footer-brand .compact-logo{width:40px;height:40px}
+html[lang=hi] .album-brand small{margin-left:0}
+@media(max-width:600px){html[lang=hi] .opening-mark{width:66px;height:66px}html[lang=hi] .brand{width:58px;height:58px}html[lang=hi] .crest{width:min(240px,100%);height:auto;aspect-ratio:1}html[lang=hi] .closing-section .crest{width:210px;height:210px}.album-brand .compact-logo{width:44px;height:44px}}
 
 /* Photo-derived venue watercolor, blended into the invitation paper. */
 .wedding-venue-card{max-width:920px;grid-template-columns:1.3fr 1fr;align-items:center;border:0;overflow:visible;background:transparent;gap:25px;margin:15px auto 42px}
