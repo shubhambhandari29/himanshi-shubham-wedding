@@ -397,3 +397,7 @@ html[lang=hi] .closing-section .crest{width:150px;height:150px;margin:25px auto 
 .wedding-venue-card .venue-copy{padding:24px 12px}
 .wedding-venue-card .venue-schedule{margin:16px 0 24px;color:#765d3d}
 @media(max-width:600px){.wedding-venue-card{grid-template-columns:1fr;gap:0;margin-top:0;max-width:430px}.wedding-venue-card .venue-copy{padding:12px 12px 25px}.venue-photo{margin:0 -12px}.wedding-venue-card .venue-schedule{margin:12px 0 20px}}
+
+/* Readable full dates for both families' celebration timelines. */
+html[lang=hi] .timeline-date{font-size:20px;font-weight:600;line-height:1.7;letter-spacing:0;color:#59472d;max-width:none;margin-bottom:10px}
+@media(max-width:600px){html[lang=hi] .timeline-date{font-size:18px;line-height:1.7;margin-bottom:9px}}

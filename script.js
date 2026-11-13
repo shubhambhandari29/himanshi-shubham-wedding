@@ -230,7 +230,7 @@
   }
   function eventCard(event,index=0) {
     const shared=event.side==='shared';
-    const date=event.date ? new Intl.DateTimeFormat(locale,{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'Asia/Kolkata'}).format(dateOnly(event.date)).toUpperCase() : event.dateLabel || 'तिथि शीघ्र बताई जाएगी';
+    const date=event.date ? new Intl.DateTimeFormat(locale,{weekday:'short',day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Kolkata'}).format(dateOnly(event.date)).toUpperCase() : event.dateLabel || 'तिथि शीघ्र बताई जाएगी';
     const clock=event.time?clockLabel(event):null;
     const title=shared?'<span class="timeline-couple">हिमांशी संग शुभम</span><span class="sr-only"> — </span>शुभ विवाह':escapeHTML(event.title);
     const time=clock?`<span>${escapeHTML(clock)}</span>`:event.timeLabel?`<span>${escapeHTML(event.timeLabel)}</span>`:'<span>समय शीघ्र</span><span>बताया जाएगा</span>';
