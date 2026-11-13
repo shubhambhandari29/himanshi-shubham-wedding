@@ -1,3 +1,5 @@
+> Latest change: the couple requested removal of the replay button. It and its explicit-motion override have been removed. Initial tap-to-open, reduced-motion handling, image decoding/timeout and skip remain. The notes below describe the earlier replay experiment.
+
 # Boat opening: iPhone/static animation report
 
 Reported symptom: another iPhone shows the boat image but it does not move. The affected device/browser could not be inspected directly, so its exact cause is not confirmed.
