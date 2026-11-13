@@ -24,7 +24,7 @@
   };
   const timeLabel = event => event.time ? clockLabel(event) : event.timeLabel || 'समय शीघ्र बताया जाएगा';
   const venueLabel = event => event.venue ? [event.venue.name,event.venue.address,event.venue.city].filter(Boolean).join(', ') : 'स्थान शीघ्र बताया जाएगा';
-  const mapURL = event => event.venue && (!event.venue.isHome || event.venue.mapsQuery || event.venue.address) ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue.mapsQuery || venueLabel(event))}` : null;
+  const mapURL = event => event.venue?.mapsUrl || (event.venue && (!event.venue.isHome || event.venue.mapsQuery || event.venue.address) ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue.mapsQuery || venueLabel(event))}` : null);
   const eventSortKey = event => `${event.date || '0000-00-00'}T${event.time || '23:59'}`;
   const chronological = events => {
     const ordered = events.filter(event => !event.after).sort((a,b) => eventSortKey(a).localeCompare(eventSortKey(b)));
@@ -213,10 +213,11 @@
   $('[data-map="wedding"]').href = mapURL(wedding);
   const mehendiEvent = config.events.find(event => event.id === 'bride-mehendi');
   $('#additional-venues').innerHTML = [
-    {title:'घर के समारोह',subtitle:'सत्संग · कीर्तन · हल्दी',venue:config.homeVenue},
+    {title:'हिमांशी के घर के समारोह',subtitle:'सत्संग · कीर्तन · हल्दी',venue:config.homeVenue},
+    {title:'शुभम के घर के समारोह',subtitle:'मेहंदी एवं कॉकटेल · कीर्तन · हल्दी · बारात प्रस्थान · वधू स्वागत',venue:config.groomHomeVenue},
     {title:'मेहंदी एवं कॉकटेल',subtitle:mehendiEvent?`${dateLabel(mehendiEvent)} · ${timeLabel(mehendiEvent)}`:'',venue:mehendiEvent?.venue}
   ].filter(card=>card.venue).map(card=>`<article class="additional-venue"><p class="overline">${escapeHTML(card.title)}</p><h4>${escapeHTML(card.venue.name)}</h4><p>${escapeHTML([card.venue.address,card.venue.city].filter(Boolean).join(', '))}</p><p class="venue-functions">${escapeHTML(card.subtitle)}</p>${mapURL({venue:card.venue})?`<a class="text-button" href="${mapURL({venue:card.venue})}" target="_blank" rel="noopener noreferrer">रास्ता देखें ↗</a>`:''}</article>`).join('');
-  const hindiNames = {satsang:'सत्संग', keertan:'कीर्तन', cocktail:'कॉकटेल', haldi:'हल्दी', wedding:'शुभ विवाह', mehendi:'मेहंदी एवं कॉकटेल', vidaai:'विदाई'};
+  const hindiNames = {baraat:'बारात प्रस्थान', welcome:'वधू स्वागत', satsang:'सत्संग', keertan:'कीर्तन', cocktail:'कॉकटेल', haldi:'हल्दी', wedding:'शुभ विवाह', mehendi:'मेहंदी एवं कॉकटेल', vidaai:'विदाई'};
   function eventIllustration(event, miniature=false) {
     const artwork = config.eventArtwork[event.type];
     if (!artwork) return '<span class="timeline-art-missing">चित्र शीघ्र जोड़ा जाएगा</span>';

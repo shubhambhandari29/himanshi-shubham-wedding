@@ -14,6 +14,7 @@ window.WEDDING = {
   motion: {introDuration: 4800, ambient: true, leafDuration: 12000, boatBobDuration: 5000, petalDuration: 17000, rippleDuration: 2600, scratchThreshold: 0.40, scratchBrush: 34},
   // Confirmed bride-side home address, shared by the couple on 13 November 2026.
   homeVenue: {name: 'निवास स्थान', address: 'गली नंबर ११, इंद्रप्रस्थ कॉलोनी, ६ नंबर पुलिया के पास', city: 'जोगीवाला, देहरादून', mapsQuery: 'Lane No 11, Indraprastha Colony, near 6 Number Puliya, Jogiwala, Dehradun', isHome: true},
+  groomHomeVenue: {name: 'भंडारी निवास', address: 'सिद्धपुरम, गली नंबर 3, हर्रावाला', city: 'देहरादून, उत्तराखंड', mapsUrl: 'https://maps.app.goo.gl/T5PzBUmyjkBatVS26', isHome: true},
   // Original decorative miniatures; these illustrate the functions, not the actual venues.
   eventArtwork: {
     satsang: {src: 'assets/events/satsang.webp', alt: 'फूलों, ग्रंथ, हारमोनियम और दीपों से सजे शांत सत्संग स्थल का जलरंग चित्र'},
@@ -22,11 +23,16 @@ window.WEDDING = {
     keertan: {src: 'assets/events/keertan.webp', alt: 'फूलों, दीपों और पूजा की चौकी से सजे भक्तिमय बगीचे का जलरंग चित्र'},
     cocktail: {src: 'assets/events/cocktail.webp', alt: 'बैठने की सजावट, लालटेनों और झिलमिल रोशनी वाले शाम के बगीचे का जलरंग चित्र'},
     haldi: {src: 'assets/events/haldi.webp', alt: 'गेंदे के फूलों की छतरी और पीतल के कटोरों से सजी हल्दी की रस्म का जलरंग चित्र'},
+    baraat: {src: 'assets/events/baraat.webp', alt: 'फूलों से सजे घोड़े, छत्र और ढोल के साथ बारात प्रस्थान का जलरंग चित्र'},
+    welcome: {src: 'assets/events/vadhu-swagat.webp', alt: 'सुबह की रोशनी में आरती की थाली और फूलों से सजे घर के द्वार पर वधू स्वागत का जलरंग चित्र'},
     wedding: {src: 'assets/events/wedding.webp', alt: 'हरे-भरे कमल उद्यान में फूलों से सजे विवाह मंडप का जलरंग चित्र'}
   },
   events: [
-    {id: 'groom-cocktail', side: 'groom', type: 'cocktail', title: 'कॉकटेल', date: null, time: null, venue: null, description: 'परिवार और दोस्तों के साथ संगीत और भोजन।', timelineDescription: 'संगीत और भोजन।', dressCode: null},
-    {id: 'groom-haldi', side: 'groom', type: 'haldi', title: 'हल्दी', date: null, time: null, venue: null, description: 'परिवार के साथ हल्दी की रस्म।', timelineDescription: 'हल्दी की रस्म।', dressCode: null},
+    {id: 'groom-cocktail', side: 'groom', type: 'mehendi', title: 'मेहंदी एवं कॉकटेल', date: '2027-02-08', time: '20:00', venueKey: 'groomHomeVenue', description: 'मेहंदी, संगीत और रात्रि भोज में शामिल हों।', timelineDescription: 'मेहंदी, संगीत और रात्रि भोज।', dressCode: null},
+    {id: 'groom-keertan', side: 'groom', type: 'keertan', title: 'कीर्तन', date: '2027-02-09', time: '14:00', venueKey: 'groomHomeVenue', description: 'घर पर भजन और कीर्तन।', timelineDescription: 'भजन और कीर्तन।', dressCode: null},
+    {id: 'groom-haldi', side: 'groom', type: 'haldi', title: 'हल्दी', date: '2027-02-10', time: '11:00', venueKey: 'groomHomeVenue', description: 'घर पर हल्दी की रस्म।', timelineDescription: 'हल्दी की रस्म।', dressCode: null},
+    {id: 'groom-baraat', side: 'groom', type: 'baraat', title: 'बारात प्रस्थान', date: '2027-02-10', time: '19:00', venueKey: 'groomHomeVenue', description: 'भंडारी निवास से बारात का प्रस्थान।', timelineDescription: 'भंडारी निवास से बारात का प्रस्थान।', dressCode: null},
+    {id: 'groom-welcome', side: 'groom', type: 'welcome', title: 'वधू स्वागत', date: '2027-02-11', time: '07:00', venueKey: 'groomHomeVenue', description: 'भंडारी परिवार में वधू का स्वागत।', timelineDescription: 'भंडारी परिवार में वधू का स्वागत।', dressCode: null},
     {id: 'bride-satsang', side: 'bride', type: 'satsang', title: 'सत्संग', date: '2027-02-08', time: '11:00', venueKey: 'homeVenue', description: 'घर पर सत्संग में आपका स्वागत है।', timelineDescription: 'सत्संग एवं आशीर्वाद।', dressCode: null},
     {id: 'bride-keertan', side: 'bride', type: 'keertan', title: 'कीर्तन', date: '2027-02-08', time: '14:00', venueKey: 'homeVenue', description: 'घर पर भजन और कीर्तन।', timelineDescription: 'भजन और कीर्तन।', dressCode: null},
     {id: 'bride-mehendi', side: 'bride', type: 'mehendi', title: 'मेहंदी एवं कॉकटेल', date: '2027-02-09', time: '20:00', venue: {name: 'स्काई गार्डन', city: 'जोगीवाला, देहरादून', address: null, mapsQuery: 'Sky Garden Wedding Point, Jogiwala, Dehradun'}, description: 'मेहंदी, संगीत और रात्रि भोज में शामिल हों।', timelineDescription: 'मेहंदी, संगीत और रात्रि भोज।', dressCode: null},
