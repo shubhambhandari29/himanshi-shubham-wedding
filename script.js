@@ -211,6 +211,8 @@
     $('#formal-'+side+'-parents').innerHTML = parents.map((parent,index) => `${index?'<br>एवं ':''}${escapeHTML(parent.name)}`).join('');
   });
   $('[data-map="wedding"]').href = mapURL(wedding);
+  $('#wedding-venue-heading').textContent = wedding.venue.name;
+  $('#wedding-venue-schedule').innerHTML = `${escapeHTML(dateLabel(wedding))}<br>${escapeHTML(timeLabel(wedding))}`;
   const mehendiEvent = config.events.find(event => event.id === 'bride-mehendi');
   $('#additional-venues').innerHTML = [
     {title:'हिमांशी के घर के समारोह',subtitle:'सत्संग · कीर्तन · हल्दी',venue:config.homeVenue},

@@ -313,3 +313,10 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   for(const type of ['baraat','welcome']){assert(fs.existsSync(path.join(root,art[type].src)));assert.notEqual(art[type].src,art.wedding.src);assert.notEqual(art[type].src,art.vidaai.src);}
   assert.notEqual(art.baraat.src,art.welcome.src);
  });
+
+ test('venue card uses the supplied entrance illustration and confirmed wedding details without the removed heading or placeholder',t=>{
+  const env=setup();t.after(env.close);const{d,w}=env,card=d.querySelector('.wedding-venue-card');
+  assert(!d.querySelector('#location-heading'));assert(!d.querySelector('#location .small-note'));assert(!d.querySelector('#location').textContent.includes('मिलते हैं देहरादून में'));assert(!d.body.textContent.includes('विस्तृत पता और आगमन की जानकारी शीघ्र साझा की जाएगी'));
+  assert.equal(card.querySelector('h3').textContent,w.WEDDING.events.find(e=>e.id==='wedding').venue.name);assert.match(card.querySelector('#wedding-venue-schedule').textContent,/10.*2027/);assert.match(card.querySelector('#wedding-venue-schedule').textContent,/रात्रि 8:00 बजे/);
+  assert.equal(card.querySelector('img').getAttribute('src'),'assets/venues/shivpriya-watercolor.webp');assert(!card.querySelector('.venue-house'));assert.match(card.querySelector('[data-map]').href,/Shivpriya%20Farms/);assert.equal(env.errors.length,0);
+ });

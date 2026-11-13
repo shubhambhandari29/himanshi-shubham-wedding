@@ -11,9 +11,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+Devanagari:wght@400;500;600&family=Tiro+Devanagari+Hindi:ital@0;1&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="preload" href="assets/lotus-botanical.webp" as="image">
   <link rel="preload" href="assets/flower-boat.webp" as="image">
-  <link rel="stylesheet" href="style.css?v=groom-schedule-1">
-  <script src="content.js?v=groom-schedule-1" defer></script>
-  <script src="script.js?v=groom-schedule-1" defer></script>
+  <link rel="stylesheet" href="style.css?v=venue-watercolor-1">
+  <script src="content.js?v=venue-watercolor-1" defer></script>
+  <script src="script.js?v=venue-watercolor-1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">निमंत्रण पर जाएँ</a>
@@ -50,9 +50,9 @@
 
   <header class="site-header">
     <a class="brand" href="#home" aria-label="हिमांशी संग शुभम, आरंभ पर लौटें"><img class="couple-logo" src="assets/logo.png" alt="हिमांशी और शुभम का लोगो" width="1254" height="1254"></a>
-    <nav aria-label="मुख्य विकल्प"><a href="#the-date">विवाह तिथि</a><a href="#celebrations">समारोह</a><a href="#our-story">तस्वीरें</a><a href="#location">आयोजन स्थल</a></nav>
+    <nav aria-label="मुख्य विकल्प"><a href="#the-date">विवाह तिथि</a><a href="#celebrations">समारोह</a><a href="#our-story">तस्वीरें</a><a href="#location">विवाह स्थल</a></nav>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="विकल्प खोलें">☰</button>
-    <nav id="mobile-nav" class="mobile-nav" aria-label="फ़ोन के लिए विकल्प" hidden><a href="#the-date">विवाह तिथि</a><a href="#celebrations">समारोह</a><a href="#our-story">तस्वीरें</a><a href="#location">आयोजन स्थल</a></nav>
+    <nav id="mobile-nav" class="mobile-nav" aria-label="फ़ोन के लिए विकल्प" hidden><a href="#the-date">विवाह तिथि</a><a href="#celebrations">समारोह</a><a href="#our-story">तस्वीरें</a><a href="#location">विवाह स्थल</a></nav>
   </header>
 
   <main id="invitation">
@@ -125,7 +125,19 @@
 
     <section class="countdown-section section" aria-labelledby="countdown-heading"><p class="overline">विवाह की उलटी गिनती</p><h2 id="countdown-heading">शुभ विवाह तक</h2><div class="countdown" aria-label="विवाह तिथि तक शेष समय"><div><strong id="days">—</strong><span>दिन</span></div><i>:</i><div><strong id="hours">—</strong><span>घंटे</span></div><i>:</i><div><strong id="minutes">—</strong><span>मिनट</span></div><i>:</i><div><strong id="seconds">—</strong><span>सेकंड</span></div></div><p id="countdown-note">शुभ विवाह तक · 10 फ़रवरी 2027 · रात्रि 8:00 बजे</p></section>
 
-    <section class="location-section section" id="location" aria-labelledby="location-heading"><p class="overline">आयोजन स्थल</p><h2 id="location-heading">मिलते हैं देहरादून में</h2><div class="floral-divider" aria-hidden="true"><span>❧</span><i>✿</i><span>❧</span></div><div class="venue-card"><div class="venue-illustration" aria-hidden="true"><span class="venue-sun"></span><span class="venue-hill hill-back"></span><span class="venue-hill hill-front"></span><span class="venue-house">⌂</span><span class="venue-mark">❦</span></div><div class="venue-copy"><span class="overline">शुभ विवाह का आयोजन स्थल</span><h3>शिवप्रिया फार्म्स</h3><p>देहरादून, उत्तराखंड</p><p class="small-note">विस्तृत पता और आगमन की जानकारी शीघ्र साझा की जाएगी।</p><a class="pill" data-map="wedding" target="_blank" rel="noopener noreferrer">गूगल मानचित्र में देखें <span>↗</span></a></div></div><div class="additional-venues" id="additional-venues"></div></section>
+    <section class="location-section section" id="location" aria-labelledby="wedding-venue-heading">
+      <div class="venue-card wedding-venue-card">
+        <figure class="venue-photo"><img src="assets/venues/shivpriya-watercolor.webp" alt="शिवप्रिया फार्म्स के फूलों और रोशनी से सजे प्रवेश द्वार का जलरंग चित्र" width="960" height="640" loading="lazy" decoding="async"></figure>
+        <div class="venue-copy">
+          <p class="overline">शुभ विवाह</p>
+          <h3 id="wedding-venue-heading">शिवप्रिया फार्म्स</h3>
+          <p id="wedding-venue-city">देहरादून, उत्तराखंड</p>
+          <p class="venue-schedule" id="wedding-venue-schedule">10 फ़रवरी 2027<br>रात्रि 8:00 बजे</p>
+          <a class="pill" data-map="wedding" target="_blank" rel="noopener noreferrer">गूगल मानचित्र में देखें <span>↗</span></a>
+        </div>
+      </div>
+      <div class="additional-venues" id="additional-venues"></div>
+    </section>
 
     <section class="family-section section" aria-labelledby="family-heading"><p class="overline">स्नेह और आशीर्वाद के साथ</p><h2 id="family-heading">हमारे परिवार</h2><div class="floral-divider" aria-hidden="true"><span>❧</span><i>✿</i><span>❧</span></div><p class="section-intro">दो घरों से, ढेर सारे स्नेह के साथ।<br>आपके स्वागत की प्रतीक्षा में।</p><div class="family-cards" id="family-cards"></div></section>
 

@@ -389,3 +389,11 @@ html[lang=hi] .closing-section .crest{width:150px;height:150px;margin:25px auto 
 
 /* Blend the supplied paper texture into the invitation, with no square edge. */
 .couple-logo{mix-blend-mode:multiply;-webkit-mask-image:radial-gradient(ellipse at center,#000 53%,transparent 73%);mask-image:radial-gradient(ellipse at center,#000 53%,transparent 73%)}
+
+/* Photo-derived venue watercolor, blended into the invitation paper. */
+.wedding-venue-card{max-width:920px;grid-template-columns:1.3fr 1fr;align-items:center;border:0;overflow:visible;background:transparent;gap:25px;margin:15px auto 42px}
+.venue-photo{margin:0;min-width:0;mix-blend-mode:multiply}
+.venue-photo img{display:block;width:100%;height:auto;object-fit:contain}
+.wedding-venue-card .venue-copy{padding:24px 12px}
+.wedding-venue-card .venue-schedule{margin:16px 0 24px;color:#765d3d}
+@media(max-width:600px){.wedding-venue-card{grid-template-columns:1fr;gap:0;margin-top:0;max-width:430px}.wedding-venue-card .venue-copy{padding:12px 12px 25px}.venue-photo{margin:0 -12px}.wedding-venue-card .venue-schedule{margin:12px 0 20px}}
