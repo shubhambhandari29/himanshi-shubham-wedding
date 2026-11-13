@@ -1,0 +1,70 @@
+/* Font roles live here. All four faces are self-hosted, licensed regular cuts. */
+@font-face{font-family:Amita;font-style:normal;font-weight:400;font-display:swap;src:url('assets/fonts/amita-regular.ttf') format('truetype')}
+@font-face{font-family:'Tiro Devanagari Hindi';font-style:normal;font-weight:400;font-display:swap;src:url('assets/fonts/tiro-devanagari-hindi-regular.ttf') format('truetype')}
+@font-face{font-family:'Noto Sans Devanagari';font-style:normal;font-weight:400;font-display:swap;src:url('assets/fonts/noto-sans-devanagari-regular.ttf') format('truetype')}
+@font-face{font-family:'Cormorant Garamond';font-style:normal;font-weight:400;font-display:swap;src:url('assets/fonts/cormorant-garamond-regular.ttf') format('truetype')}
+:root{--font-display:Amita,'Tiro Devanagari Hindi',serif;--font-formal:'Tiro Devanagari Hindi','Mangal',serif;--font-info:'Noto Sans Devanagari','Mangal',sans-serif;--font-english:'Cormorant Garamond',Georgia,serif;--serif:var(--font-formal);--script:var(--font-formal);--sans:var(--font-info)}
+html[lang=hi]{font-synthesis:none}
+html[lang=hi] body{font-family:var(--font-info);font-weight:400;font-style:normal;letter-spacing:normal;line-height:1.8}
+html[lang=hi] h1,html[lang=hi] h2,html[lang=hi] h3,html[lang=hi] h4,html[lang=hi] .formal-invite,html[lang=hi] .opening-script,html[lang=hi] .story-copy{font-family:var(--font-formal);font-weight:400;font-style:normal;letter-spacing:normal}
+html[lang=hi] em,html[lang=hi] i,html[lang=hi] strong,html[lang=hi] b{font-style:normal;font-weight:400}
+/* Amita is reserved for the couple and the two selected section headings. */
+html[lang=hi] .initial-names,html[lang=hi] .initial-names span,html[lang=hi] .intro-welcome h1,html[lang=hi] .intro-welcome h1>em,html[lang=hi] .formal-invite .formal-name,html[lang=hi] .formal-join,html[lang=hi] .closing-section h2,html[lang=hi] .closing-section h2 em,html[lang=hi] #celebrations-heading,html[lang=hi] #story-heading,#celebration-timeline .treatment-wedding .timeline-couple{font-family:var(--font-display);font-weight:400;font-style:normal;letter-spacing:normal;overflow:visible;word-break:normal;overflow-wrap:normal}
+html[lang=hi] .initial-names{font-size:30px;line-height:1.9}
+html[lang=hi] .initial-names span{font-size:21px;line-height:1.9}
+html[lang=hi] .intro-welcome h1{font-size:54px;line-height:1.85}
+html[lang=hi] .intro-welcome h1>em{font-size:25px;line-height:1.65}
+html[lang=hi] .formal-invite .formal-name{font-size:48px;line-height:1.9;padding-block:.08em}
+html[lang=hi] .formal-join{font-size:25px;line-height:1.9}
+html[lang=hi] #celebrations-heading,html[lang=hi] #story-heading{font-size:43px;line-height:1.9;padding-block:.1em}
+html[lang=hi] .closing-section h2{font-size:45px;line-height:1.9;padding-block:.1em}
+html[lang=hi] .closing-section h2 em{font-size:27px;line-height:1.9}
+/* Practical information is always sans-serif, regular and comfortably spaced. */
+html[lang=hi] .date-value,html[lang=hi] .date-label,html[lang=hi] .date-details,html[lang=hi] .formal-date,html[lang=hi] .formal-venue,html[lang=hi] .venue-copy,html[lang=hi] .additional-venue,html[lang=hi] .site-header nav,html[lang=hi] .side-selector,html[lang=hi] .side-status,html[lang=hi] .pill,html[lang=hi] .text-button,html[lang=hi] .music-toggle,html[lang=hi] .countdown{font-family:var(--font-info);font-weight:400;font-style:normal;letter-spacing:normal}
+html[lang=hi] .site-header nav>a{font-size:16px;line-height:1.8}
+html[lang=hi] .formal-date{font-size:17px;line-height:1.9}
+html[lang=hi] .formal-invite p:not(.formal-name){font-style:normal}
+html[lang=hi] .opening-mark,html[lang=hi] .brand,html[lang=hi] .crest,html[lang=hi] footer>span{font-family:var(--font-english);font-weight:400;font-style:normal}
+/* Event hierarchy: names lead, time supports, useful information stays legible. */
+#celebration-timeline .day-heading h3,#celebration-timeline .timeline-date,#celebration-timeline .timeline-time,#celebration-timeline .timeline-venue,#celebration-timeline .timeline-description,#celebration-timeline .timeline-time-note,#celebration-timeline .timeline-actions>a,#celebration-timeline .timeline-actions>button{font-family:var(--font-info);font-weight:400;font-style:normal;letter-spacing:normal;overflow-wrap:normal;word-break:normal}
+#celebration-timeline .day-heading h3{font-size:22px;line-height:1.9}
+#celebration-timeline .event-card h3{font-family:var(--font-formal);font-size:34px;font-weight:400;font-style:normal;line-height:1.85;letter-spacing:normal;overflow:visible;overflow-wrap:normal;word-break:normal;padding-block:.06em;margin-bottom:9px}
+#celebration-timeline .event-card .timeline-time,#celebration-timeline .event-card .timeline-time.is-pending{font-size:23px;line-height:1.85;color:#6b5d50;margin-bottom:6px}
+#celebration-timeline .event-card .timeline-date:not(.sr-only){font-size:18px;line-height:1.9}
+#celebration-timeline .event-card .timeline-venue{font-size:18px;line-height:1.9}
+#celebration-timeline .event-card .timeline-description,#celebration-timeline .event-card .timeline-time-note{font-size:17px;line-height:1.9}
+#celebration-timeline .event-card .timeline-actions>a,#celebration-timeline .event-card .timeline-actions>button{font-size:16px;line-height:1.85;min-height:44px}
+/* Baraat is 18% smaller (600 -> 492px); the complete image stays contained. */
+#celebration-timeline .treatment-procession .timeline-scene-image{max-width:492px;width:82%;height:auto;object-fit:contain}
+#celebration-timeline .treatment-procession{gap:3px;padding-top:20px;padding-bottom:28px}
+#celebration-timeline .treatment-wedding h3{font-size:29px;line-height:1.9}
+#celebration-timeline .treatment-wedding .timeline-couple{font-size:43px;line-height:1.9;padding-block:.08em;margin-bottom:5px}
+#celebration-timeline .treatment-wedding .timeline-time{font-size:23px}
+#celebration-timeline .treatment-wedding .timeline-venue{font-size:19px;line-height:1.9}
+@media(max-width:700px){
+  #celebration-timeline .event-card h3{font-size:30px}
+  #celebration-timeline .treatment-wedding .timeline-couple{font-size:36px}
+}
+@media(max-width:600px){
+  html[lang=hi] .initial-names{font-size:26px;line-height:1.9}
+  html[lang=hi] .initial-names span{font-size:19px}
+  html[lang=hi] .intro-welcome h1{font-size:40px;line-height:1.85}
+  html[lang=hi] .intro-welcome h1>em{font-size:22px;line-height:1.7}
+  html[lang=hi] .formal-invite .formal-name{font-size:39px;line-height:1.9}
+  html[lang=hi] .formal-join{font-size:23px}
+  html[lang=hi] #celebrations-heading,html[lang=hi] #story-heading{font-size:34px;line-height:1.9}
+  html[lang=hi] .closing-section h2{font-size:34px;line-height:1.9}
+  html[lang=hi] .closing-section h2 em{font-size:23px}
+  html[lang=hi] .formal-date{font-size:16px}
+}
+@media(max-width:520px){
+  #celebration-timeline .day-heading h3{font-size:19px;line-height:1.9}
+  #celebration-timeline .event-card h3{font-size:28px;line-height:1.85}
+  #celebration-timeline .event-card .timeline-time,#celebration-timeline .event-card .timeline-time.is-pending{font-size:21px;line-height:1.85}
+  #celebration-timeline .event-card .timeline-venue,#celebration-timeline .event-card .timeline-description,#celebration-timeline .event-card .timeline-time-note{font-size:16px;line-height:1.9}
+  #celebration-timeline .event-card .timeline-actions>a,#celebration-timeline .event-card .timeline-actions>button{font-size:16px;line-height:1.85}
+  #celebration-timeline .treatment-wedding h3{font-size:27px}
+  #celebration-timeline .treatment-wedding .timeline-couple{font-size:30px;line-height:1.9}
+  #celebration-timeline .treatment-wedding .timeline-time{font-size:21px}
+  #celebration-timeline .treatment-wedding .timeline-venue{font-size:17px}
+}

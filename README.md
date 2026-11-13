@@ -1,3 +1,5 @@
+> Typography revision: self-hosted Amita for selected names/headings, Tiro for ritual/formal text, Noto Sans for practical details, and a smaller Baraat illustration. [Font and validation notes](docs/TYPOGRAPHY.md). Publication authorized.
+
 > Celebrations redesign (publication authorized): day-grouped celebration scenes, eight new watercolor assets and a larger shared wedding feature. Preview: http://localhost:5173/?v=celebration-chapters-1#celebrations . [Design and verification notes](docs/CELEBRATION_CHAPTERS.md).
 
 > Production revision (publication authorized): invitation polish, SVG controls and Sathi Wedding Point correction. Preview: http://localhost:5173/?v=invitation-polish-1 . See [review notes](docs/INVITATION_POLISH_REVIEW.md).

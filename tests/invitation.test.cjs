@@ -112,7 +112,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   for(const anchor of d.querySelectorAll('a[href^="#"]'))assert(d.querySelector(anchor.getAttribute('href')),anchor.href);
   const ids=[...d.querySelectorAll('[id]')].map(element=>element.id);assert.equal(new Set(ids).size,ids.length);
   assert(!d.querySelector('#rsvp-form'));assert(!/fetch\(|XMLHttpRequest|localStorage|sessionStorage/.test(fs.readFileSync(path.join(root,'script.js'),'utf8')));
-  const source=['style.css','celebrations.css'].map(file=>fs.readFileSync(path.join(root,file),'utf8')).join('\n'),errors=[];cssTree.parse(source,{onParseError:error=>errors.push(error.message)});assert.deepEqual(errors,[]);assert.match(source,/\.scratch-card canvas\{[^}]*touch-action:none/);assert(!/body[^}]*touch-action:none/.test(source));assert.match(source,/@media\(prefers-reduced-motion:reduce\)/);assert.match(source,/@media\(max-width:360px\)/);assert.equal(env.errors.length,0);
+  const source=['style.css','celebrations.css','typography.css'].map(file=>fs.readFileSync(path.join(root,file),'utf8')).join('\n'),errors=[];cssTree.parse(source,{onParseError:error=>errors.push(error.message)});assert.deepEqual(errors,[]);assert.match(source,/\.scratch-card canvas\{[^}]*touch-action:none/);assert(!/body[^}]*touch-action:none/.test(source));assert.match(source,/@media\(prefers-reduced-motion:reduce\)/);assert.match(source,/@media\(max-width:360px\)/);assert.equal(env.errors.length,0);
  });
 
  test('high-density canvases keep pointer coordinates aligned with the CSS card',t=>{
@@ -178,7 +178,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
     }
   }
   checkCopy();w.WeddingApp.setSide('bride');checkCopy();w.WeddingApp.finishIntro({instant:true});w.WeddingApp.revealAllDates();d.querySelector('[data-photo="0"]').click();checkCopy();d.querySelector('#photo-close').click();
-  assert(d.querySelector('link[href*="Noto+Serif+Devanagari"]'));
+  assert(d.querySelector('link[href*="typography.css"]'));
  });
  test('dates, countdown and photo counters use English numerals',t=>{
   const env=setup();t.after(env.close);const{d,w}=env;assert.equal(d.querySelector('#date-day').textContent,'10');assert.equal(d.querySelector('#date-year').textContent,'2027');assert.match(d.querySelector('#date-month').textContent,/फ़रवरी/);
@@ -255,7 +255,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   const env=setup();t.after(env.close);const{d}=env;
   for(const logo of d.querySelectorAll('.opening-mark,.brand,.crest'))assert.equal(logo.querySelector('img').getAttribute('src'),logo.matches('.crest')?'assets/logo-emblem.webp':'assets/logo-monogram.webp');
   assert.match(d.querySelector('.intro-welcome h1').textContent,/हिमांशी/);assert.match(d.querySelector('.intro-welcome h1').textContent,/शुभम/);
-  assert.match(fs.readFileSync(path.join(root,'style.css'),'utf8'),/Cormorant Garamond/);
+  assert.match(fs.readFileSync(path.join(root,'typography.css'),'utf8'),/Cormorant Garamond/);
  });
  test('verified parents remain directly below the correct bride and groom',t=>{
   const env=setup();t.after(env.close);const{d,w}=env;
@@ -428,4 +428,27 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
     assert(['satsang','keertan'].includes(type)?image.height>image.width:image.width>image.height);
   }
   assert(art.wedding.width>art.satsang.width);assert.equal(files.size,8);
+ });
+
+ test('regular font roles are centralized and decorative headings use Amita while event names lead timings',t=>{
+  const env=setup();t.after(env.close);const{d,w}=env;const css=fs.readFileSync(path.join(root,'typography.css'),'utf8');const style=d.createElement('style');style.textContent=['style.css','celebrations.css','typography.css'].map(file=>fs.readFileSync(path.join(root,file),'utf8')).join('\n');d.head.append(style);
+  for(const selector of ['.initial-names','.intro-welcome h1','.formal-name','.formal-join','#celebrations-heading','#story-heading','.closing-section h2','#event-wedding .timeline-couple'])assert.equal(w.getComputedStyle(d.querySelector(selector)).fontFamily,'Amita, Tiro Devanagari Hindi, serif',selector);
+  const name=d.querySelector('#event-groom-cocktail h3'),time=d.querySelector('#event-groom-cocktail .timeline-time');assert.equal(w.getComputedStyle(name).fontFamily,'Tiro Devanagari Hindi, Mangal, serif');assert.equal(w.getComputedStyle(time).fontFamily,'Noto Sans Devanagari, Mangal, sans-serif');assert(parseFloat(w.getComputedStyle(name).fontSize)>parseFloat(w.getComputedStyle(time).fontSize));
+  for(const e of d.querySelectorAll('.timeline-venue,.timeline-actions a,.timeline-actions button,.day-heading h3'))assert.equal(w.getComputedStyle(e).fontFamily,'Noto Sans Devanagari, Mangal, sans-serif');
+  assert.equal(w.getComputedStyle(name).fontWeight,'400');assert.equal(w.getComputedStyle(time).fontWeight,'400');assert.equal(w.getComputedStyle(d.querySelector('.formal-invite')).fontFamily,'Tiro Devanagari Hindi, Mangal, serif');
+  for(const file of ['style.css','celebrations.css']){const source=fs.readFileSync(path.join(root,file),'utf8');assert(!/font-family\s*:|font-weight\s*:|font-style\s*:|letter-spacing\s*:/.test(source),file+' has no competing font role declarations');}
+  assert(css.includes('font-synthesis:none'));assert(!d.querySelector('link[href*="fonts.googleapis.com"]'));assert(d.querySelector('link[rel="preload"][href="assets/fonts/amita-regular.ttf"]'));
+  const faces=[];cssTree.walk(cssTree.parse(css),{visit:'Atrule',enter(node){if(node.name==='font-face')faces.push(cssTree.generate(node));}});assert.equal(faces.length,4);assert(faces.every(face=>face.includes('font-weight:400')&&face.includes('font-style:normal')));
+ });
+ test('self-hosted fonts have Hindi coverage and shaping tables; real font metrics leave room for marks at phone widths',t=>{
+  const {GlobalFonts}=require('@napi-rs/canvas');
+  function tables(buf){const result={};for(let i=0,n=buf.readUInt16BE(4);i<n;i++){const p=12+i*16;result[buf.toString('ascii',p,p+4)]={offset:buf.readUInt32BE(p+8),length:buf.readUInt32BE(p+12)};}return result;}
+  function hasCodepoint(buf,t,cp){const base=t.cmap.offset,n=buf.readUInt16BE(base+2);for(let i=0;i<n;i++){const p=base+buf.readUInt32BE(base+4+i*8+4),format=buf.readUInt16BE(p);if(format===12){for(let g=0,count=buf.readUInt32BE(p+12);g<count;g++){const q=p+16+g*12;if(cp>=buf.readUInt32BE(q)&&cp<=buf.readUInt32BE(q+4))return true;}}if(format===4){const segs=buf.readUInt16BE(p+6)/2,ends=p+14,starts=ends+segs*2+2;for(let g=0;g<segs;g++)if(cp>=buf.readUInt16BE(starts+g*2)&&cp<=buf.readUInt16BE(ends+g*2))return true;}}return false;}
+  const samples='हिमांशीसंगशुभमहमारेसमारोहहमारीकुछयादेंमेहंदीएवंकॉकटेलफ़रवरीश्रीकीर्तनप्रस्थानआशीर्वाद';
+  for(const[file,family]of [['amita-regular.ttf','Amita'],['tiro-devanagari-hindi-regular.ttf','Tiro'],['noto-sans-devanagari-regular.ttf','Noto']]){
+    const p=path.join(root,'assets/fonts',file),buf=fs.readFileSync(p);assert.equal(buf.readUInt32BE(0),0x00010000);const t=tables(buf);assert(t.GSUB);for(const ch of samples)assert(hasCodepoint(buf,t,ch.codePointAt(0)),family+' missing '+ch);assert(GlobalFonts.registerFromPath(p,'Check '+family));
+  }
+  const ctx=createCanvas(20,20).getContext('2d');for(const width of [360,390,430]){
+    for(const[text,size,family]of [['हमारे समारोह',34,'Amita'],['हमारी कुछ यादें',34,'Amita'],['हिमांशी संग शुभम',30,'Amita'],['मेहंदी एवं कॉकटेल',28,'Tiro'],['प्रातः 11:00 बजे',21,'Noto']]){ctx.font=`${size}px "Check ${family}"`;const m=ctx.measureText(text);assert(m.width<width-68,text+' at '+width);assert(m.actualBoundingBoxAscent+m.actualBoundingBoxDescent<size*1.85,text+' mark clearance');}
+  }
  });
