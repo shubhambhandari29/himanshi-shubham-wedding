@@ -8,7 +8,7 @@ const cssTree=require('css-tree');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 
-function setup({url='http://localhost:5173/',reduced=false,canvas=true,contact=null,music=false,clipboard=false,dpr=1,observeTimeline=false,weddingTime=undefined,autoplayAllowed=false}={}) {
+function setup({url='http://localhost:5173/',reduced=false,canvas=true,music=false,clipboard=false,dpr=1,observeTimeline=false,weddingTime=undefined,autoplayAllowed=false}={}) {
   const errors=[],downloads=[],opened=[],copied=[],animations=[],observers=[];
   const virtualConsole=new VirtualConsole();virtualConsole.on('jsdomError',error=>errors.push(error));
   const dom=new JSDOM(html.replace(/<noscript>[\s\S]*?<\/noscript>/g,''),{url,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole});
@@ -46,7 +46,6 @@ function setup({url='http://localhost:5173/',reduced=false,canvas=true,contact=n
   w.eval(fs.readFileSync(path.join(root,'content.js'),'utf8'));
   if(weddingTime!==undefined)w.WEDDING.events.find(event=>event.id==='wedding').time=weddingTime;
   if(music===false)w.WEDDING.music={src:null,title:null,licence:null};
-  if(contact)w.WEDDING.families.groom.contact=contact;
   if(music===true)w.WEDDING.music={src:'licensed-test-track.mp3',title:'Test track',licence:'Test fixture only'};
   let audioPaused=true,audioPlays=0;
   const audio=d.querySelector('audio');
@@ -383,12 +382,16 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   d.querySelector('#music-toggle').click();await tick();assert(d.querySelector('#music-toggle svg[data-icon="pause"]'));d.querySelector('#music-toggle').click();await tick();assert(d.querySelector('#music-toggle svg[data-icon="play"]'));
   d.querySelector('.menu-toggle').click();assert(d.querySelector('.menu-toggle svg[data-icon="close"]'));d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));assert(d.querySelector('.menu-toggle svg[data-icon="menu"]'));assert.equal(env.errors.length,0);
  });
- test('contact cards stay hidden until verified names and numbers exist; call and WhatsApp links never submit data',t=>{
+ test('confirmed family numbers have distinct accessible call and WhatsApp actions without individual identities or submissions',t=>{
   const env=setup();t.after(env.close);const{d,w}=env;
-  assert(d.querySelector('#contacts').hidden);assert([...d.querySelectorAll('[data-contact-nav]')].every(e=>e.hidden));assert.equal(d.querySelectorAll('.contact-card').length,0);
-  w.WEDDING.families.groom.contact={name:'परीक्षण संपर्क',phone:null};w.WeddingApp.renderContacts();assert(d.querySelector('#contacts').hidden);
-  w.WEDDING.families.groom.contact.phone='+919999999999';w.WEDDING.families.bride.contact={name:'परीक्षण संपर्क',phone:'918888888888'};w.WeddingApp.renderContacts();assert(!d.querySelector('#contacts').hidden);assert.equal(d.querySelectorAll('.contact-card').length,2);assert([...d.querySelectorAll('[data-contact-nav]')].every(e=>!e.hidden));
-  assert.equal(d.querySelector('.contact-actions a').href,'tel:+919999999999');assert.equal(d.querySelector('.contact-actions a:nth-child(2)').href,'https://wa.me/919999999999');assert.equal(env.opened.length,0);assert(!d.querySelector('form'));assert.equal(env.errors.length,0);
+  assert(!d.querySelector('#contacts').hidden);assert([...d.querySelectorAll('[data-contact-nav]')].every(e=>!e.hidden));assert.equal(d.querySelectorAll('.contact-card').length,2);
+  const expected={groom:['+919634387491','+919760182277'],bride:['+917351415376','+917895663687']};
+  for(const[side,numbers]of Object.entries(expected)){
+    const card=d.querySelector(`.contact-card[data-family="${side}"]`);assert.equal(card.querySelector('h3').textContent,w.WEDDING.families[side].name+' का परिवार');assert.equal(card.querySelectorAll('.contact-entry').length,2);assert.deepEqual([...w.WEDDING.families[side].contacts],numbers);
+    for(const[number,index]of numbers.map((value,index)=>[value,index])){const entry=card.querySelectorAll('.contact-entry')[index],links=entry.querySelectorAll('a'),local=number.slice(3);assert.equal(links[0].href,'tel:'+number);assert.equal(links[1].href,'https://wa.me/'+number.slice(1));assert.equal(links[0].textContent.trim(),'कॉल करें');assert.equal(links[1].textContent.trim(),'व्हाट्सऐप');assert.equal(entry.querySelector('bdi').textContent,local.slice(0,5)+' '+local.slice(5));for(const link of links){assert(link.getAttribute('aria-label').includes(w.WEDDING.families[side].name));assert(link.querySelector('svg.ui-icon'));}assert(!new URL(links[1].href).searchParams.has('text'));}
+  }
+  assert.equal(env.opened.length,0);assert(!d.querySelector('form'));assert.equal(env.errors.length,0);
+  w.WEDDING.families.groom.contacts=[];w.WEDDING.families.bride.contacts=['invalid',''];w.WeddingApp.renderContacts();assert(d.querySelector('#contacts').hidden);assert.equal(d.querySelectorAll('.contact-card').length,0);
  });
 
  test('each family is grouped by real dates, with separate undated farewell and a paired devotional morning',t=>{
@@ -451,4 +454,20 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   const ctx=createCanvas(20,20).getContext('2d');for(const width of [360,390,430]){
     for(const[text,size,family]of [['हमारे समारोह',34,'Amita'],['हमारी कुछ यादें',34,'Amita'],['हिमांशी संग शुभम',30,'Amita'],['मेहंदी एवं कॉकटेल',28,'Tiro'],['प्रातः 11:00 बजे',21,'Noto']]){ctx.font=`${size}px "Check ${family}"`;const m=ctx.measureText(text);assert(m.width<width-68,text+' at '+width);assert(m.actualBoundingBoxAscent+m.actualBoundingBoxDescent<size*1.85,text+' mark clearance');}
   }
+ });
+
+ test('every event keeps its family identity without restoring the redundant global status sentence',t=>{
+  const env=setup();t.after(env.close);const{d,w}=env;
+  for(const side of ['groom','bride']){w.WeddingApp.setSide(side);for(const event of d.querySelectorAll('.timeline-event')){const badge=event.querySelector('.family-badge');assert(badge);assert.equal(badge.textContent,event.dataset.family==='shared'?'दोनों परिवारों का साझा समारोह':w.WEDDING.families[side].label);assert.equal(event.querySelectorAll('.family-badge').length,1);}assert(!d.querySelector('#side-status'));assert(!d.body.textContent.includes('शुभ विवाह दोनों परिवारों का है।'));}
+ });
+ test('gallery starts with lantern, school and travel photos and the viewer follows that same varied sequence',t=>{
+  const env=setup();t.after(env.close);const{d,w}=env,photos=w.WEDDING.photos;
+  assert.deepEqual([...photos].slice(0,3).map(p=>p.file),['WhatsApp Image 2026-11-05 at 20.40.14 (10).jpeg','WhatsApp Image 2026-11-05 at 20.40.13 (1).jpeg','WhatsApp Image 2026-11-05 at 20.40.13 (12).jpeg']);assert.equal(new Set([...photos].map(p=>p.file)).size,10);assert.equal(d.querySelectorAll('.photo-memory').length,10);assert(!d.querySelector('#our-story > .overline'));
+  for(let index=0;index<3;index++){const image=d.querySelectorAll('.photo-memory img')[index];assert.equal(image.alt,photos[index].alt);assert(decodeURIComponent(image.src).endsWith(photos[index].file));}
+  d.querySelector('[data-photo="0"]').click();assert.equal(d.querySelector('#photo-caption').textContent,photos[0].caption);d.querySelector('#photo-next').click();assert.equal(d.querySelector('#photo-caption').textContent,photos[1].caption);assert.equal(d.querySelector('#lightbox-image').alt,photos[1].alt);d.querySelector('#photo-next').click();assert.equal(d.querySelector('#photo-caption').textContent,photos[2].caption);assert.equal(d.querySelector('#photo-counter').textContent,'03 / 10');assert.equal(env.errors.length,0);
+ });
+ test('directions have a primary fill while calendars stay secondary and compact spacing preserves type roles',t=>{
+  const env=setup();t.after(env.close);const{d,w}=env,style=d.createElement('style');style.textContent=['style.css','celebrations.css','typography.css'].map(p=>fs.readFileSync(path.join(root,p),'utf8')).join('\n');d.head.append(style);
+  for(const side of ['groom','bride']){w.WeddingApp.setSide(side);for(const row of d.querySelectorAll('.timeline-event')){const primary=row.querySelector('.timeline-actions>a'),secondary=row.querySelector('.timeline-actions>button');if(primary){assert.notEqual(w.getComputedStyle(primary).backgroundColor,'rgba(0, 0, 0, 0)');assert(parseFloat(w.getComputedStyle(primary).minHeight)>=44);}if(secondary){assert.equal(w.getComputedStyle(secondary).backgroundColor,'rgba(0, 0, 0, 0)');assert(parseFloat(w.getComputedStyle(secondary).minHeight)>=44);}}}
+  const headingStyle=w.getComputedStyle(d.querySelector('#celebrations-heading'));assert(parseFloat(headingStyle.wordSpacing)>0&&parseFloat(headingStyle.wordSpacing)<parseFloat(headingStyle.fontSize)*.25);assert.equal(w.getComputedStyle(d.querySelector('#celebrations-heading')).letterSpacing,'normal');assert.equal(w.getComputedStyle(d.querySelector('#our-story')).paddingTop,'38px');assert.equal(w.getComputedStyle(d.querySelector('.formal-invite')).paddingTop,'46px');
  });

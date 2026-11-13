@@ -5,11 +5,11 @@ window.WEDDING = {
   numberLocale: 'hi-IN-u-nu-latn',
   couple: {bride: 'हिमांशी', groom: 'शुभम', city: 'देहरादून, उत्तराखंड'},
   families: {
-    groom: {name: 'शुभम', label: 'शुभम के समारोह', contact: {name: null, phone: null}, members: [{name: 'श्रीमती मंजुश्री भंडारी', relationship: 'माता'}, {name: 'श्री रविंद्र सिंह भंडारी', relationship: 'पिता'}]},
-    bride: {name: 'हिमांशी', label: 'हिमांशी के समारोह', contact: {name: null, phone: null}, members: [{name: 'श्रीमती वीना राणा', relationship: 'माता'}, {name: 'श्री राजेंद्र सिंह राणा', relationship: 'पिता'}]}
+    groom: {name: 'शुभम', label: 'शुभम के समारोह', contacts: ['+919634387491', '+919760182277'], members: [{name: 'श्रीमती मंजुश्री भंडारी', relationship: 'माता'}, {name: 'श्री रविंद्र सिंह भंडारी', relationship: 'पिता'}]},
+    bride: {name: 'हिमांशी', label: 'हिमांशी के समारोह', contacts: ['+917351415376', '+917895663687'], members: [{name: 'श्रीमती वीना राणा', relationship: 'माता'}, {name: 'श्री राजेंद्र सिंह राणा', relationship: 'पिता'}]}
   },
   // Use international digits only, e.g. a confirmed Indian number prefixed with 91.
-  // Fill both name and phone only for contacts verified by the couple; incomplete cards stay hidden.
+  // Confirmed family numbers only. Individual names/relationships have not been supplied.
   music: {src: 'assets/Sajna%20-Darshan%20Raval%20%28Audio%20Song%29%20%23DD.mp3', title: 'सजना', enabled: true, volume: 0.4, source: 'user-provided', licence: null},
   motion: {introDuration: 4800, ambient: true, leafDuration: 12000, boatBobDuration: 5000, petalDuration: 17000, rippleDuration: 2600, scratchThreshold: 0.40, scratchBrush: 34},
   // Confirmed bride-side home address, shared by the couple on 13 November 2026.
@@ -48,11 +48,11 @@ window.WEDDING = {
   },
   photos: [
     {file: 'WhatsApp Image 2026-11-05 at 20.40.14 (10).jpeg', caption: 'रोशनी के तले', alt: 'जगमगाती लालटेनों के नीचे साथ खड़े हिमांशी और शुभम', position: '50% 35%'},
+    {file: 'WhatsApp Image 2026-11-05 at 20.40.13 (1).jpeg', caption: 'छोटे-छोटे पल', alt: 'स्कूल की वर्दी में साथ ली गई एक पुरानी तस्वीर', position: '50% 30%'},
+    {file: 'WhatsApp Image 2026-11-05 at 20.40.13 (12).jpeg', caption: 'पहाड़ों की हवा', alt: 'धूप भरे दिन साथ की एक पहाड़ी यात्रा', position: '50% 50%'},
     {file: 'WhatsApp Image 2026-11-05 at 20.40.14 (5).jpeg', caption: 'एक जगमगाती शाम', alt: 'झिलमिल रोशनी के नीचे उत्सव के परिधानों में हिमांशी और शुभम', position: '50% 30%'},
     {file: 'WhatsApp Image 2026-11-05 at 20.40.13 (24).jpeg', caption: 'उत्सव के रंगों में', alt: 'हरियाली और झिलमिल रोशनी के बीच उत्सव के परिधानों में हिमांशी और शुभम', position: '50% 25%'},
     {file: 'WhatsApp Image 2026-11-05 at 20.40.14 (11).jpeg', caption: 'एक और नृत्य', alt: 'पहाड़ियों के सामने एक-दूसरे का हाथ थामे हिमांशी और शुभम', position: '50% 65%'},
-    {file: 'WhatsApp Image 2026-11-05 at 20.40.13 (1).jpeg', caption: 'छोटे-छोटे पल', alt: 'स्कूल की वर्दी में साथ ली गई एक पुरानी तस्वीर', position: '50% 30%'},
-    {file: 'WhatsApp Image 2026-11-05 at 20.40.13 (12).jpeg', caption: 'पहाड़ों की हवा', alt: 'धूप भरे दिन साथ की एक पहाड़ी यात्रा', position: '50% 50%'},
     {file: 'WhatsApp Image 2026-11-05 at 20.40.13 (15).jpeg', caption: 'थोड़ा रोमांच', alt: 'सुरक्षा जैकेट पहने पानी पर साथ बैठे हिमांशी और शुभम', position: '50% 50%'},
     {file: 'WhatsApp Image 2026-11-05 at 20.40.13 (18).jpeg', caption: 'खुशियों के पड़ाव', alt: 'दीक्षांत समारोह की टोपी और पटका पहने साथ खुशियाँ मनाते हुए', position: '50% 50%'},
     {file: 'WhatsApp Image 2026-11-05 at 20.40.14 (7).jpeg', caption: 'खिले-खिले दिन', alt: 'धूप और फूलों से भरी हरियाली के बीच साथ की तस्वीर', position: '50% 40%'},

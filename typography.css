@@ -68,3 +68,8 @@ html[lang=hi] .opening-mark,html[lang=hi] .brand,html[lang=hi] .crest,html[lang=
   #celebration-timeline .treatment-wedding .timeline-time{font-size:21px}
   #celebration-timeline .treatment-wedding .timeline-venue{font-size:17px}
 }
+
+#celebration-timeline .event-card .family-badge{font-family:var(--font-info);font-size:15px;line-height:1.8;font-weight:400;font-style:normal;letter-spacing:normal}
+html[lang=hi] .contact-card h3,html[lang=hi] .contact-number{font-family:var(--font-info);font-weight:400;font-style:normal;letter-spacing:normal}
+html[lang=hi] .contact-number{font-size:21px;line-height:1.8;font-variant-numeric:tabular-nums}
+html[lang=hi] #celebrations-heading{word-spacing:.16em}

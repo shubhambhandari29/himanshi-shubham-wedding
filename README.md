@@ -1,3 +1,5 @@
+> Latest review: family labels on each event, four confirmed family contact numbers, a varied gallery opening, tighter invitation spacing and primary directions actions. Publication authorized. [Review notes](docs/FAMILY_REVIEW.md).
+
 > Typography revision: self-hosted Amita for selected names/headings, Tiro for ritual/formal text, Noto Sans for practical details, and a smaller Baraat illustration. [Font and validation notes](docs/TYPOGRAPHY.md). Publication authorized.
 
 > Celebrations redesign (publication authorized): day-grouped celebration scenes, eight new watercolor assets and a larger shared wedding feature. Preview: http://localhost:5173/?v=celebration-chapters-1#celebrations . [Design and verification notes](docs/CELEBRATION_CHAPTERS.md).
@@ -33,7 +35,7 @@ GitHub Pages serves the invitation from `main`. Live website: https://shubhambha
 
 ## Editable content
 
-`content.js` is the single source for events, family contacts (`families.groom.contact` / `families.bride.contact` with `name` and `phone`), verified family members, story paragraphs, captions, photos, optional licensed music, and animation settings.
+`content.js` is the single source for events, family contacts (`families.groom.contacts` / `families.bride.contacts`, arrays of confirmed +91 numbers without personal identities), verified family members, story paragraphs, captions, photos, optional licensed music, and animation settings.
 
 - Shared wedding: **10 February 2027, 8 PM IST**, **Shivpriya Farms, Dehradun**. The countdown and calendar now use this confirmed time.
 - Himanshi's confirmed events: Satsang on 8 February at 11 AM; Keertan on 8 February at 2 PM; combined Mehendi and Cocktail on 9 February at 8 PM at Sathi Wedding Point (user-supplied share link); Haldi on 10 February at 11 AM at home; shared wedding on 10 February at 8 PM; Vidaai after the wedding, labelled ‘तारों की छाँव में’. Shubham’s confirmed schedule: combined Mehendi/Cocktail on 8 February at 8 PM, Keertan on 9 February at 2 PM, Haldi on 10 February at 11 AM, Baraat departure on 10 February at 7 PM, shared wedding at Shivpriya Farms at 8 PM, and Vadhu Swagat on 11 February at 7 AM. Home events use Bhandari Niwas, Siddhpuram Lane No 3, Harrawala, Dehradun and the supplied exact Maps link. Vadhu Swagat is shown at the family home.

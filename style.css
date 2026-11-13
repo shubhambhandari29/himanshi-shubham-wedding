@@ -470,3 +470,33 @@ html[lang=hi] .music-toggle{font-size:15px;min-height:44px}
 html[lang=hi] .pill,html[lang=hi] .venue-copy .pill{font-size:16px;line-height:1.8;gap:10px;white-space:normal}
 html[lang=hi] .countdown span,html[lang=hi] .date-label{font-size:15px;line-height:1.8;}
 html[lang=hi] .countdown-section>p:last-child{font-size:16px;line-height:1.9}
+
+/* Compact family contacts and calmer spacing around invitation/gallery content. */
+.contact-card h3{margin:0 0 16px}
+.contact-entry{padding:14px 0}
+.contact-entry+.contact-entry{border-top:1px solid var(--border)}
+.contact-entry .contact-number{margin:0 0 8px}
+.contact-entry .contact-actions{margin-top:0;gap:8px 18px}
+.contact-entry .contact-actions>a{min-height:44px}
+.story-section{padding-top:38px;padding-bottom:35px}
+.story-section #story-heading{margin-bottom:4px}
+.story-section>.floral-divider{margin:2px auto 10px}
+.story-section .story-copy{margin-bottom:14px}
+.story-section .photo-track{padding-top:8px}
+html[lang=hi] .formal-section{padding-top:32px;padding-bottom:38px}
+html[lang=hi] .formal-invite{padding-top:46px;padding-bottom:35px}
+html[lang=hi] .formal-invite .crest{width:240px;height:240px;margin-bottom:12px}
+html[lang=hi] .formal-invite .floral-divider{margin-bottom:13px}
+html[lang=hi] .formal-blessing{margin-bottom:14px}
+html[lang=hi] .formal-couple{margin:14px auto}
+html[lang=hi] .formal-relation{margin-bottom:4px}
+html[lang=hi] .formal-join{margin:10px 0}
+html[lang=hi] .formal-invite .formal-message{margin-top:14px}
+html[lang=hi] .formal-rule{margin:16px auto}
+@media(max-width:600px){
+  .story-section{padding-top:26px;padding-bottom:28px}
+  .story-section .story-copy{margin-bottom:12px}
+  html[lang=hi] .formal-section{padding-top:28px;padding-bottom:30px}
+  html[lang=hi] .formal-invite{padding-top:40px;padding-bottom:30px}
+  html[lang=hi] .formal-invite .crest{width:min(220px,100%);height:auto;aspect-ratio:1;margin-bottom:10px}
+}

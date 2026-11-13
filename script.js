@@ -262,11 +262,12 @@
   }
   function eventCard(event,index=0) {
     const shared=event.side==='shared',treatment=eventTreatments[event.type] || 'devotional';
+    const familyLabel=shared?'दोनों परिवारों का साझा समारोह':config.families[event.side].label;
     const title=shared?'<span class="timeline-couple">हिमांशी संग शुभम</span><span class="sr-only"> — </span>शुभ विवाह':escapeHTML(event.title);
     const date=event.date?dateLabel(event):event.dateLabel || 'तिथि शीघ्र बताई जाएगी';
     const dateMarkup=event.date?`<time datetime="${event.date}">${escapeHTML(date)}</time>`:escapeHTML(date);
     const description=event.timelineDescription && ![event.title,event.timeLabel].filter(Boolean).some(text=>text.replace(/[।.!\s]+$/u,'')===event.timelineDescription.replace(/[।.!\s]+$/u,'')) ? event.timelineDescription : null;
-    return `<article role="listitem" class="timeline-event event-card event-type-${escapeHTML(event.type)} treatment-${treatment}" id="event-${escapeHTML(event.id)}" data-position="${shared?'center':index%2===0?'art-left':'art-right'}" data-family="${escapeHTML(event.side)}" data-treatment="${treatment}" aria-labelledby="title-${escapeHTML(event.id)}"><figure class="timeline-scene">${eventIllustration(event)}<span class="scene-atmosphere" aria-hidden="true"><i></i><i></i><i></i></span></figure><div class="timeline-details"><p class="timeline-date ${event.date&&!shared?'sr-only':''}">${dateMarkup}</p><p class="timeline-time ${event.time?'':'is-pending'}" aria-label="${escapeHTML(timeLabel(event))}">${escapeHTML(timeLabel(event))}</p><h3 id="title-${escapeHTML(event.id)}" aria-level="4">${title}</h3>${description?`<p class="timeline-description">${escapeHTML(description)}</p>`:''}<p class="timeline-venue">${escapeHTML(shortVenueLabel(event))}</p>${shared&&!event.time?'<p class="timeline-time-note">विवाह की रात्रि · सही समय शीघ्र बताया जाएगा</p>':''}<div class="timeline-actions">${mapURL(event)?`<a href="${escapeHTML(mapURL(event))}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(event.title)}: ${escapeHTML(shortVenueLabel(event))} का रास्ता देखें">${icon('map')} रास्ता देखें</a>`:''}${event.date&&event.time?`<button type="button" data-calendar="${escapeHTML(event.id)}" aria-label="${escapeHTML(event.title)} कैलेंडर में जोड़ें">${icon('calendar')} कैलेंडर में जोड़ें</button>`:''}</div>${event.dressCode?`<p class="event-dress">परिधान: ${escapeHTML(event.dressCode)}</p>`:''}</div></article>`;
+    return `<article role="listitem" class="timeline-event event-card event-type-${escapeHTML(event.type)} treatment-${treatment}" id="event-${escapeHTML(event.id)}" data-position="${shared?'center':index%2===0?'art-left':'art-right'}" data-family="${escapeHTML(event.side)}" data-treatment="${treatment}" aria-labelledby="title-${escapeHTML(event.id)}"><figure class="timeline-scene">${eventIllustration(event)}<span class="scene-atmosphere" aria-hidden="true"><i></i><i></i><i></i></span></figure><div class="timeline-details"><p class="family-badge">${escapeHTML(familyLabel)}</p><p class="timeline-date ${event.date&&!shared?'sr-only':''}">${dateMarkup}</p><p class="timeline-time ${event.time?'':'is-pending'}" aria-label="${escapeHTML(timeLabel(event))}">${escapeHTML(timeLabel(event))}</p><h3 id="title-${escapeHTML(event.id)}" aria-level="4">${title}</h3>${description?`<p class="timeline-description">${escapeHTML(description)}</p>`:''}<p class="timeline-venue">${escapeHTML(shortVenueLabel(event))}</p>${shared&&!event.time?'<p class="timeline-time-note">विवाह की रात्रि · सही समय शीघ्र बताया जाएगा</p>':''}<div class="timeline-actions">${mapURL(event)?`<a href="${escapeHTML(mapURL(event))}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(event.title)}: ${escapeHTML(shortVenueLabel(event))} का रास्ता देखें">${icon('map')} रास्ता देखें</a>`:''}${event.date&&event.time?`<button type="button" data-calendar="${escapeHTML(event.id)}" aria-label="${escapeHTML(event.title)} कैलेंडर में जोड़ें">${icon('calendar')} कैलेंडर में जोड़ें</button>`:''}</div>${event.dressCode?`<p class="event-dress">परिधान: ${escapeHTML(event.dressCode)}</p>`:''}</div></article>`;
   }
   let timelineObserver;
   function updateTimelineProgress() {
@@ -317,13 +318,13 @@
   $('#story-copy').innerHTML = config.story.paragraphs.map(paragraph => `<p>${escapeHTML(paragraph)}</p>`).join('');
   $('#story-heading').textContent = config.story.heading;
   function renderContacts(){
-    const contacts=['groom','bride'].map(side=>({side,...config.families[side].contact})).filter(contact=>contact.name&&typeof contact.phone==='string'&&/^\+?[1-9]\d{7,14}$/.test(contact.phone));
-    $('#contacts').hidden=contacts.length===0;
-    $$('[data-contact-nav]').forEach(link=>link.hidden=contacts.length===0);
-    $('#contact-cards').innerHTML=contacts.map(contact=>{
-      const digits=contact.phone.replace(/\D/g,'');
-      return `<article class="contact-card"><p>${escapeHTML(config.families[contact.side].name)} का परिवार</p><h3>${escapeHTML(contact.name)}</h3><p class="contact-number">+${digits}</p><div class="contact-actions"><a href="tel:+${digits}" aria-label="${escapeHTML(contact.name)} को फ़ोन करें">${icon('phone')} फ़ोन करें</a><a href="https://wa.me/${digits}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(contact.name)} से व्हाट्सऐप पर संपर्क करें">${icon('message')} व्हाट्सऐप</a></div></article>`;
-    }).join('');
+    const families=['groom','bride'].map(side=>({side,family:config.families[side],numbers:[...new Set(config.families[side].contacts || [])].filter(phone=>typeof phone==='string'&&/^\+[1-9]\d{7,14}$/.test(phone))})).filter(entry=>entry.numbers.length);
+    $('#contacts').hidden=families.length===0;
+    $$('[data-contact-nav]').forEach(link=>link.hidden=families.length===0);
+    $('#contact-cards').innerHTML=families.map(({side,family,numbers})=>`<article class="contact-card" data-family="${side}" aria-labelledby="contact-${side}-heading"><h3 id="contact-${side}-heading">${escapeHTML(family.name)} का परिवार</h3>${numbers.map(phone=>{
+      const digits=phone.slice(1),local=phone.startsWith('+91')?phone.slice(3):digits,display=local.length===10?local.slice(0,5)+' '+local.slice(5):phone;
+      return `<div class="contact-entry" data-phone="${phone}"><p class="contact-number"><bdi dir="ltr">${display}</bdi></p><div class="contact-actions"><a href="tel:${phone}" aria-label="${escapeHTML(family.name)} के परिवार को ${display} पर कॉल करें">${icon('phone')} कॉल करें</a><a href="https://wa.me/${digits}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(family.name)} के परिवार से ${display} पर व्हाट्सऐप पर संपर्क करें">${icon('message')} व्हाट्सऐप</a></div></div>`;
+    }).join('')}</article>`).join('');
   }
   renderContacts();
 

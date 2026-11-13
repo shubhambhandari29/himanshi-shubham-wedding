@@ -138,3 +138,13 @@
   #celebration-timeline .scene-atmosphere{display:none}
   #celebration-timeline *,#celebration-timeline *::before,#celebration-timeline *::after{animation:none!important;transition:none!important}
 }
+
+/* Family context travels with each event, including when a guest shares a screenshot. */
+#celebration-timeline .event-card .family-badge{display:inline-block;max-width:100%;margin:0 0 11px;padding-bottom:3px;color:#685646;border-bottom:1px solid #af926c66}
+#celebration-timeline .treatment-wedding .family-badge{margin-left:auto;margin-right:auto;color:#78505b}
+/* Directions are the primary action; calendar downloads remain quiet and tappable. */
+#celebration-timeline .event-card .timeline-actions>a{padding:9px 15px;border:1px solid var(--ritual-ink);border-radius:25px;background:var(--ritual-ink);color:#fff8ec;text-decoration:none;min-height:44px}
+#celebration-timeline .event-card .timeline-actions>a:hover{filter:brightness(.92)}
+#celebration-timeline .event-card .timeline-actions>button{padding:8px 0;border:1px solid transparent;background:transparent;color:#6b5d50;text-decoration:underline;text-decoration-color:#a58f6c88;text-underline-offset:4px;min-height:44px}
+#celebration-timeline .event-card .timeline-actions>button:hover{color:var(--ritual-ink);text-decoration-color:currentColor}
+#celebration-timeline .treatment-wedding .timeline-actions>button{padding:9px 14px;border-color:#b6948970;border-radius:25px}
