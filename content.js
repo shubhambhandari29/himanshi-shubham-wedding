@@ -17,15 +17,15 @@ window.WEDDING = {
   groomHomeVenue: {name: 'भंडारी निवास', shortLabel: 'भंडारी निवास, हर्रावाला', address: 'सिद्धपुरम, गली नंबर 3, हर्रावाला', city: 'देहरादून, उत्तराखंड', mapsUrl: 'https://maps.app.goo.gl/T5PzBUmyjkBatVS26', isHome: true},
   // Original decorative miniatures; these illustrate the functions, not the actual venues.
   eventArtwork: {
-    satsang: {src: 'assets/events/satsang.webp', alt: 'फूलों, ग्रंथ, हारमोनियम और दीपों से सजे शांत सत्संग स्थल का जलरंग चित्र'},
-    mehendi: {src: 'assets/events/cocktail.webp', alt: 'मेहंदी एवं कॉकटेल के लिए रोशनी और फूलों से सजे बगीचे का जलरंग चित्र'},
-    vidaai: {src: 'assets/events/vidaai.webp', alt: 'तारों और चाँद की छाँव में फूलों से सजी डोली के साथ विदाई का जलरंग चित्र'},
-    keertan: {src: 'assets/events/keertan.webp', alt: 'फूलों, दीपों और पूजा की चौकी से सजे भक्तिमय बगीचे का जलरंग चित्र'},
-    cocktail: {src: 'assets/events/cocktail.webp', alt: 'बैठने की सजावट, लालटेनों और झिलमिल रोशनी वाले शाम के बगीचे का जलरंग चित्र'},
-    haldi: {src: 'assets/events/haldi.webp', alt: 'गेंदे के फूलों की छतरी और पीतल के कटोरों से सजी हल्दी की रस्म का जलरंग चित्र'},
-    baraat: {src: 'assets/events/baraat.webp', alt: 'फूलों से सजे घोड़े, छत्र और ढोल के साथ बारात प्रस्थान का जलरंग चित्र'},
-    welcome: {src: 'assets/events/vadhu-swagat.webp', alt: 'सुबह की रोशनी में आरती की थाली और फूलों से सजे घर के द्वार पर वधू स्वागत का जलरंग चित्र'},
-    wedding: {src: 'assets/events/wedding.webp', alt: 'हरे-भरे कमल उद्यान में फूलों से सजे विवाह मंडप का जलरंग चित्र'}
+    satsang: {src: 'assets/events/chapters/satsang.webp', width: 520, height: 650, alt: 'ग्रंथ, दीप और गेंदे की माला से सजे शांत सत्संग स्थल का खुला जलरंग चित्र'},
+    mehendi: {src: 'assets/events/chapters/cocktail.webp', width: 960, height: 640, alt: 'शाम के बगीचे में लालटेनों, सुनहरी रोशनी और मेहंदी की सजावट का चौड़ा जलरंग चित्र'},
+    vidaai: {src: 'assets/events/chapters/vidaai.webp', width: 560, height: 373, alt: 'चाँदनी में डोली, लालटेन और पहाड़ी रास्ते पर विदाई का शांत जलरंग चित्र'},
+    keertan: {src: 'assets/events/chapters/keertan.webp', width: 520, height: 650, alt: 'हारमोनियम, तबले, मंजीरे और दीप के साथ कीर्तन का जलरंग चित्र'},
+    cocktail: {src: 'assets/events/chapters/cocktail.webp', width: 960, height: 640, alt: 'शाम के बगीचे में लालटेनों, सुनहरी रोशनी और मेहंदी की सजावट का चौड़ा जलरंग चित्र'},
+    haldi: {src: 'assets/events/chapters/haldi.webp', width: 860, height: 573, alt: 'पीले फूलों, लटकती गेंदे की मालाओं और पीतल के कटोरों से सजी हल्दी का जलरंग चित्र'},
+    baraat: {src: 'assets/events/chapters/baraat.webp', width: 1080, height: 720, alt: 'सजे हुए घोड़े, छत्र, ढोल और शाम की रोशनी के साथ चलती बारात का चौड़ा जलरंग चित्र'},
+    welcome: {src: 'assets/events/chapters/welcome.webp', width: 560, height: 373, alt: 'सुबह की रोशनी में पहाड़ी घर के द्वार और आरती की थाली का जलरंग चित्र'},
+    wedding: {src: 'assets/events/chapters/wedding.webp', width: 1200, height: 800, alt: 'मैरून फूलों, सुनहरी छतरी और अग्नि से सजे बड़े विवाह मंडप का जलरंग चित्र'}
   },
   events: [
     {id: 'groom-cocktail', side: 'groom', type: 'mehendi', title: 'मेहंदी एवं कॉकटेल', date: '2027-02-08', time: '20:00', venueKey: 'groomHomeVenue', description: 'मेहंदी, संगीत और रात्रि भोज में शामिल हों।', timelineDescription: 'मेहंदी, संगीत और रात्रि भोज।', dressCode: null},

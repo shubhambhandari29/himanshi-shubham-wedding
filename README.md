@@ -1,3 +1,5 @@
+> Celebrations redesign (publication authorized): day-grouped celebration scenes, eight new watercolor assets and a larger shared wedding feature. Preview: http://localhost:5173/?v=celebration-chapters-1#celebrations . [Design and verification notes](docs/CELEBRATION_CHAPTERS.md).
+
 > Production revision (publication authorized): invitation polish, SVG controls and Sathi Wedding Point correction. Preview: http://localhost:5173/?v=invitation-polish-1 . See [review notes](docs/INVITATION_POLISH_REVIEW.md).
 
 > Current revision: Latin digits throughout, supplied illustrated logo and replacement MP3; RSVP and travel advice removed. Event titles are concise and invitation copy simplified.

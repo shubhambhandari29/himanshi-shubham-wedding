@@ -95,7 +95,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
  test('family direct links, switching, history, focus, and shared wedding remain consistent',t=>{
   for(const side of ['groom','bride','invalid']){
     const env=setup({url:'http://localhost:5173/?utm_source=family&side='+side});t.after(env.close);
-    const expected=side==='bride'?'bride':'groom';assert.equal(env.w.WeddingApp.getState().side,expected);assert.equal(env.d.querySelectorAll('#celebration-timeline .celebration-card').length,6);assert.equal(env.d.querySelectorAll('#event-wedding').length,1);assert.match(env.d.querySelector('#event-wedding').textContent,/शिवप्रिया फार्म्स/);
+    const expected=side==='bride'?'bride':'groom';assert.equal(env.w.WeddingApp.getState().side,expected);assert.equal(env.d.querySelectorAll('#celebration-timeline .timeline-event').length,6);assert.equal(env.d.querySelectorAll('#event-wedding').length,1);assert.match(env.d.querySelector('#event-wedding').textContent,/शिवप्रिया फार्म्स/);
     const button=env.d.querySelector('[data-side="bride"]');button.focus();button.click();assert.equal(env.d.activeElement,button);assert.equal(new URL(env.w.location.href).searchParams.get('utm_source'),'family');assert.equal(env.w.WeddingApp.getState().side,'bride');
     env.dom.reconfigure({url:'http://localhost:5173/?side=groom'});env.w.dispatchEvent(new env.w.PopStateEvent('popstate'));assert.equal(env.w.WeddingApp.getState().side,'groom');assert.equal(env.errors.length,0);
   }
@@ -112,7 +112,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   for(const anchor of d.querySelectorAll('a[href^="#"]'))assert(d.querySelector(anchor.getAttribute('href')),anchor.href);
   const ids=[...d.querySelectorAll('[id]')].map(element=>element.id);assert.equal(new Set(ids).size,ids.length);
   assert(!d.querySelector('#rsvp-form'));assert(!/fetch\(|XMLHttpRequest|localStorage|sessionStorage/.test(fs.readFileSync(path.join(root,'script.js'),'utf8')));
-  const source=fs.readFileSync(path.join(root,'style.css'),'utf8'),errors=[];cssTree.parse(source,{onParseError:error=>errors.push(error.message)});assert.deepEqual(errors,[]);assert.match(source,/\.scratch-card canvas\{[^}]*touch-action:none/);assert(!/body[^}]*touch-action:none/.test(source));assert.match(source,/@media\(prefers-reduced-motion:reduce\)/);assert.match(source,/@media\(max-width:360px\)/);assert.equal(env.errors.length,0);
+  const source=['style.css','celebrations.css'].map(file=>fs.readFileSync(path.join(root,file),'utf8')).join('\n'),errors=[];cssTree.parse(source,{onParseError:error=>errors.push(error.message)});assert.deepEqual(errors,[]);assert.match(source,/\.scratch-card canvas\{[^}]*touch-action:none/);assert(!/body[^}]*touch-action:none/.test(source));assert.match(source,/@media\(prefers-reduced-motion:reduce\)/);assert.match(source,/@media\(max-width:360px\)/);assert.equal(env.errors.length,0);
  });
 
  test('high-density canvases keep pointer coordinates aligned with the CSS card',t=>{
@@ -133,12 +133,12 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   const env=setup({music:true});t.after(env.close);env.d.querySelector('audio').play=async()=>{throw new Error('Playback blocked')};env.d.querySelector('#music-toggle').click();await tick();assert.match(env.d.querySelector('#music-status').textContent,/संगीत नहीं चल सका/);assert.equal(env.d.querySelector('#music-toggle').getAttribute('aria-pressed'),'false');assert(!env.d.querySelector('#music-toggle').disabled);
  });
 
- test('illustrated timeline alternates across a continuous spine and includes one shared wedding',t=>{
+ test('day-grouped celebrations retain complete illustrated events and one shared wedding',t=>{
   const env=setup();t.after(env.close);const{d,w}=env;
   for(const side of ['groom','bride']){
     w.WeddingApp.setSide(side);const rows=[...d.querySelectorAll('.timeline-event')];
-    assert.equal(rows.length,6);assert.deepEqual(rows.map(row=>row.dataset.position),rows.map((_,i)=>i%2?'art-right':'art-left'));
-    assert.equal(d.querySelectorAll('.timeline-track').length,1);assert.equal(d.querySelectorAll('.timeline-marker svg').length,rows.length);assert.equal(d.querySelectorAll('.timeline-scene img').length,rows.length);assert.equal(d.querySelectorAll('#event-wedding').length,1);
+    assert.equal(rows.length,6);assert(d.querySelectorAll('.celebration-day').length>=3);
+    assert.equal(d.querySelectorAll('.timeline-track').length,0);assert.equal(d.querySelectorAll('.day-heading .day-ornament svg').length,d.querySelectorAll('.celebration-day').length);assert.equal(d.querySelectorAll('.timeline-scene img').length,rows.length);assert.equal(d.querySelectorAll('#event-wedding').length,1);
     assert(rows.every(row=>row.querySelector('.timeline-date')&&row.querySelector('.timeline-time')&&row.querySelector('.timeline-venue')));
     for(const row of rows){const event=w.WEDDING.events.find(e=>'event-'+e.id===row.id);assert.equal(Boolean(row.querySelector('[data-calendar]')),Boolean(event.date&&event.time));}
   }
@@ -151,9 +151,9 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   // Same-date functions must also be in actual clock order, not source-array order.
   events.find(e=>e.id==='groom-haldi').date='2027-02-10';w.WeddingApp.setSide('groom');assert.deepEqual([...d.querySelectorAll('.timeline-event')].map(row=>row.id),['event-groom-cocktail','event-groom-haldi','event-wedding']);
  });
- test('timeline progress follows reading position and is fully visible for reduced motion',t=>{
-  const env=setup();t.after(env.close);const timeline=env.d.querySelector('.illustrated-timeline');timeline.getBoundingClientRect=()=>({top:300,height:1000});env.w.WeddingApp.updateTimelineProgress();const p=Number(timeline.style.getPropertyValue('--timeline-progress'));assert(p>0&&p<1);timeline.getBoundingClientRect=()=>({top:1000,height:1000});env.w.WeddingApp.updateTimelineProgress();assert.equal(timeline.style.getPropertyValue('--timeline-progress'),'0');timeline.getBoundingClientRect=()=>({top:-1500,height:1000});env.w.WeddingApp.updateTimelineProgress();assert.equal(timeline.style.getPropertyValue('--timeline-progress'),'1');
-  const reduced=setup({reduced:true});t.after(reduced.close);assert.equal(reduced.d.querySelector('.illustrated-timeline').style.getPropertyValue('--timeline-progress'),'1');assert([...reduced.d.querySelectorAll('.timeline-event')].every(row=>!row.hidden));
+ test('day connectors follow reading position and reduced motion exposes all information without animation',t=>{
+  const env=setup();t.after(env.close);const days=[...env.d.querySelectorAll('.day-events')];days[0].getBoundingClientRect=()=>({top:300,height:1000});env.w.WeddingApp.updateTimelineProgress();const p=Number(days[0].style.getPropertyValue('--day-progress'));assert(p>0&&p<1);days[0].getBoundingClientRect=()=>({top:1000,height:1000});env.w.WeddingApp.updateTimelineProgress();assert.equal(days[0].style.getPropertyValue('--day-progress'),'0');
+  const reduced=setup({reduced:true,observeTimeline:true});t.after(reduced.close);assert([...reduced.d.querySelectorAll('.day-events')].every(day=>day.style.getPropertyValue('--day-progress')==='1'));assert([...reduced.d.querySelectorAll('.timeline-event')].every(row=>!row.hidden));assert(!reduced.observers.some(o=>o.elements.some(e=>e.classList.contains('timeline-event'))));
  });
  test('viewport entrances animate the scene first and details shortly afterwards',t=>{
   const env=setup({observeTimeline:true});t.after(env.close);const observer=env.observers.find(o=>o.elements.some(e=>e.classList.contains('timeline-event')));assert(observer);const row=observer.elements[0];observer.callback([{isIntersecting:true,target:row}]);const scene=env.animations.find(a=>a.element===row.querySelector('.timeline-scene')),details=env.animations.find(a=>a.element===row.querySelector('.timeline-details'));assert(scene);assert(details);assert.equal(scene.options.duration,950);assert.equal(details.options.delay,150);assert.equal(details.options.duration,850);
@@ -273,7 +273,7 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
  });
  test('Satsang and Vidaai use their own new miniature image files',t=>{
   const env=setup({url:'http://localhost:5173/?side=bride'});t.after(env.close);const{d,w}=env,art=w.WEDDING.eventArtwork;
-  assert.equal(art.satsang.src,'assets/events/satsang.webp');assert.equal(art.vidaai.src,'assets/events/vidaai.webp');
+  assert.equal(art.satsang.src,'assets/events/chapters/satsang.webp');assert.equal(art.vidaai.src,'assets/events/chapters/vidaai.webp');
   assert.notEqual(art.satsang.src,art.keertan.src);assert.notEqual(art.vidaai.src,art.wedding.src);
   assert.equal(d.querySelector('#event-bride-satsang .timeline-scene img').getAttribute('src'),art.satsang.src);assert.equal(d.querySelector('#event-bride-vidaai .timeline-scene img').getAttribute('src'),art.vidaai.src);
   assert(!fs.readFileSync(path.join(root,art.satsang.src)).equals(fs.readFileSync(path.join(root,art.keertan.src))));assert(!fs.readFileSync(path.join(root,art.vidaai.src)).equals(fs.readFileSync(path.join(root,art.wedding.src))));
@@ -389,4 +389,43 @@ const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
   w.WEDDING.families.groom.contact={name:'परीक्षण संपर्क',phone:null};w.WeddingApp.renderContacts();assert(d.querySelector('#contacts').hidden);
   w.WEDDING.families.groom.contact.phone='+919999999999';w.WEDDING.families.bride.contact={name:'परीक्षण संपर्क',phone:'918888888888'};w.WeddingApp.renderContacts();assert(!d.querySelector('#contacts').hidden);assert.equal(d.querySelectorAll('.contact-card').length,2);assert([...d.querySelectorAll('[data-contact-nav]')].every(e=>!e.hidden));
   assert.equal(d.querySelector('.contact-actions a').href,'tel:+919999999999');assert.equal(d.querySelector('.contact-actions a:nth-child(2)').href,'https://wa.me/919999999999');assert.equal(env.opened.length,0);assert(!d.querySelector('form'));assert.equal(env.errors.length,0);
+ });
+
+ test('each family is grouped by real dates, with separate undated farewell and a paired devotional morning',t=>{
+  const env=setup();t.after(env.close);const{d,w}=env;
+  const expectations={groom:['2027-02-08','2027-02-09','2027-02-10','2027-02-11'],bride:['2027-02-08','2027-02-09','2027-02-10','after-wedding']};
+  for(const side of ['groom','bride']){
+    w.WeddingApp.setSide(side);assert.deepEqual([...d.querySelectorAll('.celebration-day')].map(day=>day.dataset.date),expectations[side]);
+    for(const day of d.querySelectorAll('.celebration-day')){assert.equal(day.querySelectorAll('.day-heading').length,1);assert(day.querySelector('.day-events[role=list]'));assert(day.querySelector('.day-heading h3').textContent.includes(day.dataset.date==='after-wedding'?'विवाह के बाद':'फ़रवरी'));}
+    assert.deepEqual([...d.querySelectorAll('.timeline-event')].map(e=>e.id),'groom'===side?['groom-cocktail','groom-keertan','groom-haldi','groom-baraat','wedding','groom-welcome'].map(id=>'event-'+id):['bride-satsang','bride-keertan','bride-mehendi','bride-haldi','wedding','bride-vidaai'].map(id=>'event-'+id));
+    for(const date of d.querySelectorAll('.timeline-event:not(#event-wedding) .timeline-date'))if(date.querySelector('time'))assert(date.classList.contains('sr-only'));
+  }
+  const pair=d.querySelector('.devotional-pair');assert.deepEqual([...pair.querySelectorAll('.timeline-event')].map(row=>row.id),['event-bride-satsang','event-bride-keertan']);assert.match(pair.textContent,/प्रातः 11:00 बजे/);assert.match(pair.textContent,/दोपहर 2:00 बजे/);
+  const vidai=w.WEDDING.events.find(e=>e.id==='bride-vidaai');assert.equal(vidai.date,null);assert.equal(vidai.time,null);assert.equal(vidai.venue,null);
+ });
+ test('rituals use different composition families and both schedules share the same wedding centrepiece',t=>{
+  const env=setup();t.after(env.close);const{d,w}=env;
+  const treatments={'groom-cocktail':'evening','groom-keertan':'devotional','groom-haldi':'sunny','groom-baraat':'procession',wedding:'wedding','groom-welcome':'dawn'};
+  for(const[id,treatment]of Object.entries(treatments))assert.equal(d.querySelector('#event-'+id).dataset.treatment,treatment);
+  const wedding=d.querySelector('#event-wedding').outerHTML;w.WeddingApp.setSide('bride');assert.equal(d.querySelector('#event-wedding').outerHTML,wedding);assert.equal(d.querySelector('#event-bride-vidaai').dataset.treatment,'moonlight');assert.equal(d.querySelectorAll('#event-wedding').length,1);
+  assert(d.querySelector('#event-wedding .timeline-date time[datetime="2027-02-10"]'));assert.match(d.querySelector('#event-wedding').textContent,/हिमांशी संग शुभम/);
+ });
+ test('baraat enters horizontally, wedding reveals gradually, and changing families does not replay opening',t=>{
+  const env=setup({observeTimeline:true});t.after(env.close);const{d,w}=env;w.WeddingApp.finishIntro({instant:true});
+  const observer=env.observers.find(o=>o.elements.some(e=>e.classList.contains('timeline-event')));const baraat=d.querySelector('#event-groom-baraat'),wedding=d.querySelector('#event-wedding');observer.callback([{isIntersecting:true,target:baraat},{isIntersecting:true,target:wedding}]);
+  assert.equal(env.animations.find(a=>a.element===baraat.querySelector('.timeline-scene')).frames[0].transform,'translateX(-20px)');assert.equal(env.animations.find(a=>a.element===wedding.querySelector('.timeline-scene')).options.duration,1400);assert(wedding.classList.contains('scene-entered'));
+  w.WeddingApp.setSide('bride');assert(observer.disconnected);assert.equal(w.WeddingApp.getState().intro,'revealed');assert.equal(env.errors.length,0);
+ });
+
+ test('chapter artwork preserves wide and portrait silhouettes with transparency and correct intrinsic sizes',async t=>{
+  const {loadImage}=require('@napi-rs/canvas');const env=setup();t.after(env.close);const art=env.w.WEDDING.eventArtwork;
+  const files=new Set();
+  for(const type of ['cocktail','satsang','keertan','haldi','baraat','wedding','welcome','vidaai']){
+    const asset=art[type];assert(asset.src.startsWith('assets/events/chapters/'));assert(!files.has(asset.src));files.add(asset.src);
+    const image=await loadImage(path.join(root,asset.src));assert.equal(image.width,asset.width);assert.equal(image.height,asset.height);
+    const canvas=createCanvas(image.width,image.height),ctx=canvas.getContext('2d');ctx.drawImage(image,0,0);const data=ctx.getImageData(0,0,image.width,image.height).data;let clear=0;for(let i=3;i<data.length;i+=4)if(data[i]===0)clear++;
+    assert(clear>image.width*image.height*.03,`${type} has real transparent outer edges`);
+    assert(['satsang','keertan'].includes(type)?image.height>image.width:image.width>image.height);
+  }
+  assert(art.wedding.width>art.satsang.width);assert.equal(files.size,8);
  });
