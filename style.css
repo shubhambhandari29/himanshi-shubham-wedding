@@ -361,3 +361,20 @@ html[lang=hi] .lightbox-caption>span{font-size:14px;letter-spacing:0}
   html[lang=hi] .lightbox-caption>span{font-size:12px;letter-spacing:0}
 }
 @media(max-width:359px){html[lang=hi] .opening-script{font-size:31px}html[lang=hi] .intro-welcome h1{font-size:39px}html[lang=hi] .formal-invite h2{font-size:37px}html[lang=hi] .timeline-time.is-pending>span{display:block}html[lang=hi] .timeline-time.is-pending>span+span::before{content:none}html[lang=hi] .celebrations-section .timeline-event h3{font-size:24px}html[lang=hi] .timeline-description,html[lang=hi] .timeline-venue{font-size:17px}html[lang=hi] .closing-section h2{font-size:29px}}
+/* Bride-side confirmed venues, using the same understated invitation treatment. */
+.additional-venues{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:760px;margin:0 auto 42px;text-align:center}.additional-venue{padding:25px 23px;border:1px solid #ae986e66;border-radius:5px;background:#f8eddd36}.additional-venue .overline{font-size:11px;letter-spacing:0;margin-bottom:12px}.additional-venue h4{font-size:25px;line-height:1.8;margin-bottom:10px}.additional-venue>p:not(.overline){font-size:16px;line-height:1.9;margin-bottom:12px}.additional-venue .venue-functions{font-size:14px!important;font-style:italic}.additional-venue .text-button{font-size:14px}.event-type-vidaai .timeline-time{color:#9b6471}
+@media(max-width:600px){.additional-venues{grid-template-columns:1fr;gap:16px;margin-bottom:35px;max-width:390px}.additional-venue{padding:24px}.additional-venue h4{font-size:24px}.additional-venue>p:not(.overline){font-size:15px}}
+/* English monogram, Hindi invitation copy, and verified parentage. */
+html[lang=hi] .opening-mark,html[lang=hi] .brand,html[lang=hi] .crest{font-family:'Cormorant Garamond',Georgia,serif;letter-spacing:-2px;font-weight:500;line-height:1.1}
+html[lang=hi] .opening-mark{font-size:31px}html[lang=hi] .brand{font-size:32px}html[lang=hi] .crest{font-size:36px}
+html[lang=hi] .opening-mark>span,html[lang=hi] .brand>span,html[lang=hi] .crest>span{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:21px;margin:0 4px;letter-spacing:0}
+.lightbox-toolbar>span{font-family:'Cormorant Garamond',Georgia,serif}html[lang=hi] .lightbox-toolbar small{font-family:var(--sans)}
+html[lang=hi] footer>span{font-family:'Cormorant Garamond',Georgia,serif;font-size:14px;letter-spacing:.5px}
+.formal-couple{margin:25px auto 22px;max-width:480px}.formal-person{margin:0 auto}.formal-invite h2.sr-only{margin:0}
+html[lang=hi] .formal-invite .formal-name{font-family:var(--script);font-size:58px;line-height:1.65;font-weight:400;margin:0 0 5px;letter-spacing:0}
+.formal-relation{font-family:var(--serif);font-size:15px;line-height:1.9;margin:0 0 7px;color:var(--muted)}
+.formal-parents{font-family:var(--serif);font-size:19px;line-height:2;margin:0}
+.formal-join{font-family:var(--script);font-size:27px;line-height:1.8;margin:19px 0}
+html[lang=hi] .formal-invite .formal-message{max-width:420px;margin:25px auto 0;line-height:2.1}
+@media(max-width:600px){html[lang=hi] .opening-mark{font-size:29px}html[lang=hi] .brand{font-size:30px}html[lang=hi] .crest{font-size:33px}html[lang=hi] .opening-mark>span,html[lang=hi] .brand>span,html[lang=hi] .crest>span{font-size:20px}.formal-couple{margin:20px auto}.formal-relation{font-size:13px;line-height:1.9;margin-bottom:6px}.formal-parents{font-size:16px;line-height:2.1}.formal-join{font-size:23px;margin:16px 0}html[lang=hi] .formal-invite .formal-name{font-size:43px;line-height:1.65;margin-bottom:4px}html[lang=hi] .formal-invite .formal-message{font-size:17px;line-height:2.1;max-width:270px;margin-top:22px}}
+@media(max-width:359px){html[lang=hi] .formal-invite .formal-name{font-size:38px}.formal-parents{font-size:15px}.formal-relation{font-size:12px}}

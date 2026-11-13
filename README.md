@@ -1,3 +1,5 @@
+> नवीन संपादन: तिथियाँ और घड़ी का समय अब 0–9 अंकों में हैं; H&S लोगो अंग्रेज़ी में है। मुख्य पाठ हिंदी में है। माता-पिता का परिचय और सत्संग/विदाई के नए चित्र जोड़े गए हैं। इस संस्करण का प्रकाशन 13 नवंबर 2026 को अधिकृत किया गया है; GitHub Pages इसे `main` से उपलब्ध कराता है।
+
 # हिंदी देवनागरी संस्करण
 
 पूरा निमंत्रण देवनागरी में है; मूल साँचा, तस्वीरें और क्रियाएँ बरकरार हैं। हिंदी संस्करण की अलग `hindi-devanagari` शाखा सुरक्षित रखी गई है। उपयोगकर्ता की अनुमति के बाद इसे `main` में सम्मिलित करके मौजूदा वेबसाइट पर प्रकाशित किया जा रहा है। स्थानीय पूर्वावलोकन: http://localhost:5173/ । विवरण: [हिंदी संस्करण के नोट्स](docs/HINDI.md)।
@@ -25,12 +27,12 @@ GitHub Pages serves the invitation from `main`. Live website: https://shubhambha
 
 `content.js` is the single source for events, family contacts, verified family members, story paragraphs, captions, photos, optional licensed music, and animation settings.
 
-- Shared wedding: **10 February 2027**, **Shivpriya Farms, Dehradun**, at night. Exact time is unconfirmed.
-- The bride's and groom's Cocktail and Haldi dates, times, and venues are deliberately `null` until their separate information is supplied. Unknown facts display “To be announced”. No maps/calendar actions are offered for unavailable facts.
-- Prior facts remain in a clearly labelled disclosure, awaiting family allocation: Keertan on 8 February; Cocktail on 9 February at Sky Garden, Jogiwala, Dehradun; Haldi on 10 February at 10 AM IST. They are not assigned to either family or offered as family-specific RSVP options.
+- Shared wedding: **10 February 2027, 8 PM IST**, **Shivpriya Farms, Dehradun**. The countdown and calendar now use this confirmed time.
+- Himanshi's confirmed events: Satsang on 8 February at 11 AM; Keertan on 8 February at 2 PM; combined Mehendi and Cocktail on 9 February at 8 PM at Sky Garden, Jogiwala; Haldi on 10 February at 11 AM at home; shared wedding on 10 February at 8 PM; Vidaai after the wedding, labelled ‘तारों की छाँव में’. Groom-side pre-wedding dates and venues remain unconfirmed.
+- The couple confirmed the bride-side home address as Lane No 11, Indraprastha Colony, near 6 Number Puliya, Jogiwala, Dehradun. `homeVenue` supplies one shared address for Satsang, Keertan and Haldi. Earlier unassigned placeholders have been superseded: Haldi is 11 AM (not the older 10 AM), and Mehendi/Cocktail are one combined event. The empty pending-details disclosure is hidden.
 - Family members and relationships are empty until verified. Accommodation and exact street addresses have not been invented. Dress details remain unconfirmed.
 - Add confirmed contacts as international digits (e.g. an Indian phone number prefixed with `91`). Until then, the WhatsApp action is disabled and the copy-reply option remains available.
-- Music is hidden until both a suitable `music.src` and licence information are configured. It never autoplays.
+- The supplied Sajna MP3 is configured via its actual filename, with `enabled: true` and an initial volume of 0.4. Playback starts only after the music button is tapped; it loops and can be paused. Audio provenance is recorded as user-provided; licence metadata remains unspecified rather than inventing a permission statement. A null source or `enabled: false` hides the control.
 - Ambient motion, intro duration, scratch brush size, and the completion threshold are adjustable. All motion respects reduced-motion preferences.
 
 The opening and scratch state remain in memory during page navigation. RSVP selections are retained per function while switching family views, without browser storage. Reloading starts a new visit.
@@ -65,3 +67,8 @@ Existing hosting: https://shubhambhandari29.github.io/himanshi-shubham-wedding/ 
 The celebration cards have been replaced by a continuous, alternating illustrated timeline on the blush background. The four original circular watercolour scenes are in `assets/events/`; `content.js` maps each function to its illustration. Both family views include the shared wedding in date/time order. Timeline calendar actions require a confirmed time; the date section retains its date-only reminder. See [docs/CELEBRATIONS.md](docs/CELEBRATIONS.md) for the reviewed recording frames, asset paths and prompts, responsive behaviour, 24 passing checks, and the outstanding 390px visual screenshot comparison.
 
 Jump straight to the preview: http://localhost:5173/#celebrations . This revision is included in the GitHub Pages publication.
+
+
+## Bride-side schedule and audio update
+
+The user authorized publishing the 13 November 2026 content update and supplied MP3 to the existing GitHub Pages site. Preview: http://localhost:5173/?side=bride#celebrations . See [docs/BRIDE_SCHEDULE.md](docs/BRIDE_SCHEDULE.md) for the confirmed facts and remaining information.

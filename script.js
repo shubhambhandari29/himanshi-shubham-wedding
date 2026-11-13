@@ -1,8 +1,11 @@
 (() => {
   'use strict';
   const config = window.WEDDING;
-  const locale = config.locale || 'hi-IN-u-nu-deva';
-  const numberFormat = new Intl.NumberFormat(locale,{useGrouping:false});
+  const locale = config.locale || 'hi-IN-u-nu-latn';
+  const numberFormat = new Intl.NumberFormat(config.numberLocale || 'hi-IN-u-nu-deva',{useGrouping:false});
+  const dateNumberFormat = new Intl.NumberFormat(locale,{useGrouping:false});
+  const formatDateNumber = value => dateNumberFormat.format(value);
+  const padDateNumber = value => formatDateNumber(value).padStart(2,'0');
   const formatNumber = value => numberFormat.format(value);
   const padNumber = value => formatNumber(value).padStart(2,'०');
   const latinDigits = value => String(value).replace(/[०-९]/g,char => String(char.charCodeAt(0)-0x0966));
@@ -15,18 +18,24 @@
   const wedding = config.events.find(event => event.id === 'wedding');
   const dateFormat = new Intl.DateTimeFormat(locale, {day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Kolkata'});
   const dateOnly = date => new Date(`${date}T12:00:00+05:30`);
-  const dateLabel = event => event.date ? dateFormat.format(dateOnly(event.date)) : 'तिथि शीघ्र बताई जाएगी';
+  const dateLabel = event => event.date ? dateFormat.format(dateOnly(event.date)) : event.dateLabel || 'तिथि शीघ्र बताई जाएगी';
   const clockLabel = event => {
     const [hours,minutes] = event.time.split(':').map(Number);
     const period = hours < 12 ? 'प्रातः' : hours < 16 ? 'अपराह्न' : hours < 20 ? 'सायं' : 'रात्रि';
-    return `${period} ${formatNumber(hours % 12 || 12)}:${padNumber(minutes)} बजे`;
+    return `${period} ${formatDateNumber(hours % 12 || 12)}:${padDateNumber(minutes)} बजे`;
   };
-  const timeLabel = event => event.time ? `${clockLabel(event)} (भारतीय समय)` : event.timeLabel || 'समय शीघ्र बताया जाएगा';
-  const venueLabel = event => event.venue ? [event.venue.name,event.venue.city].filter(Boolean).join(', ') : 'स्थान शीघ्र बताया जाएगा';
-  const mapURL = event => event.venue ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue.mapsQuery || venueLabel(event))}` : null;
+  const timeLabel = event => event.time ? clockLabel(event) : event.timeLabel || 'समय शीघ्र बताया जाएगा';
+  const venueLabel = event => event.venue ? [event.venue.name,event.venue.address,event.venue.city].filter(Boolean).join(', ') : 'स्थान शीघ्र बताया जाएगा';
+  const mapURL = event => event.venue && (!event.venue.isHome || event.venue.mapsQuery || event.venue.address) ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue.mapsQuery || venueLabel(event))}` : null;
   const eventSortKey = event => `${event.date || '0000-00-00'}T${event.time || '23:59'}`;
-  const chronological = events => [...events].sort((a,b) => eventSortKey(a).localeCompare(eventSortKey(b)));
-  const currentEvents = side => chronological(config.events.filter(event => event.side === side));
+  const chronological = events => {
+    const ordered = events.filter(event => !event.after).sort((a,b) => eventSortKey(a).localeCompare(eventSortKey(b)));
+    events.filter(event => event.after).forEach(event => {
+      const index = ordered.findIndex(item => item.id === event.after);
+      ordered.splice(index < 0 ? ordered.length : index + 1, 0, event);
+    });
+    return ordered;
+  };
   const scheduleEvents = side => chronological(config.events.filter(event => event.side === side || event.side === 'shared'));
   const animate = (element,frames,options) => { if (!motion.matches && element?.animate) element.animate(frames,options); };
   let toastTimer;
@@ -57,7 +66,7 @@
     $('.scroll-cue').removeAttribute('tabindex');
     const focusWasOpening = document.activeElement === tapButton || document.activeElement === skipButton;
     tapButton.hidden = true; skipButton.hidden = true;
-    $('.intro-status').textContent = 'हिमांशी एवं शुभम के शुभ विवाह में आपका स्वागत है। निमंत्रण देखने के लिए नीचे जाएँ।';
+    $('.intro-status').textContent = 'हिमांशी संग शुभम के शुभ विवाह में आपका स्वागत है। निमंत्रण देखने के लिए नीचे जाएँ।';
     if (focusWasOpening) $('.scroll-cue').focus({preventScroll:true});
   }
   function startIntro(event) {
@@ -103,7 +112,7 @@
     if (scratchStates.length === 3 && revealed === 3) {
       $('#date-details').hidden = false;
       $('#reveal-date').textContent = 'इस तिथि को सहेज लीजिए ✧';
-      $('#reveal-date').setAttribute('aria-label','विवाह तिथि खुल गई है: १० फ़रवरी २०२७');
+      $('#reveal-date').setAttribute('aria-label','विवाह तिथि खुल गई है: 10 फ़रवरी 2027');
     }
   }
   function paintCover(state) {
@@ -195,12 +204,21 @@
   const weekday = new Intl.DateTimeFormat(locale,{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Kolkata'}).format(dateOnly(wedding.date));
   $('#date-day').textContent = new Intl.DateTimeFormat(locale,{day:'numeric',timeZone:'Asia/Kolkata'}).format(dateOnly(wedding.date));
   $('#date-month').textContent = new Intl.DateTimeFormat(locale,{month:'long',timeZone:'Asia/Kolkata'}).format(dateOnly(wedding.date));
-  $('#date-year').textContent = formatNumber(Number(wedding.date.slice(0,4)));
+  $('#date-year').textContent = formatDateNumber(Number(wedding.date.slice(0,4)));
   $('.wedding-weekday').textContent = weekday;
   $('.date-time').textContent = timeLabel(wedding); $('.date-venue').textContent = venueLabel(wedding);
   $('.formal-date').textContent = dateLabel(wedding).toUpperCase(); $('.formal-venue').textContent = venueLabel(wedding);
+  ['bride','groom'].forEach(side => {
+    const parents = config.families[side].members;
+    $('#formal-'+side+'-parents').innerHTML = parents.map((parent,index) => `${index?'<br>एवं ':''}${escapeHTML(parent.name)}`).join('');
+  });
   $('[data-map="wedding"]').href = mapURL(wedding);
-  const hindiNames = {keertan:'कीर्तन', cocktail:'कॉकटेल', haldi:'हल्दी', wedding:'शुभ विवाह', mehendi:'मेहंदी'};
+  const mehendiEvent = config.events.find(event => event.id === 'bride-mehendi');
+  $('#additional-venues').innerHTML = [
+    {title:'घर के समारोह',subtitle:'सत्संग · कीर्तन · हल्दी',venue:config.homeVenue},
+    {title:'मेहंदी एवं कॉकटेल',subtitle:mehendiEvent?`${dateLabel(mehendiEvent)} · ${timeLabel(mehendiEvent)}`:'',venue:mehendiEvent?.venue}
+  ].filter(card=>card.venue).map(card=>`<article class="additional-venue"><p class="overline">${escapeHTML(card.title)}</p><h4>${escapeHTML(card.venue.name)}</h4><p>${escapeHTML([card.venue.address,card.venue.city].filter(Boolean).join(', '))}</p><p class="venue-functions">${escapeHTML(card.subtitle)}</p>${mapURL({venue:card.venue})?`<a class="text-button" href="${mapURL({venue:card.venue})}" target="_blank" rel="noopener noreferrer">रास्ता देखें ↗</a>`:''}</article>`).join('');
+  const hindiNames = {satsang:'सत्संग', keertan:'कीर्तन', cocktail:'कॉकटेल', haldi:'हल्दी', wedding:'शुभ विवाह', mehendi:'मेहंदी एवं कॉकटेल', vidaai:'विदाई'};
   function eventIllustration(event, miniature=false) {
     const artwork = config.eventArtwork[event.type];
     if (!artwork) return '<span class="timeline-art-missing">चित्र शीघ्र जोड़ा जाएगा</span>';
@@ -211,11 +229,11 @@
   }
   function eventCard(event,index=0) {
     const shared=event.side==='shared';
-    const date=event.date ? new Intl.DateTimeFormat(locale,{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'Asia/Kolkata'}).format(dateOnly(event.date)).toUpperCase() : 'तिथि शीघ्र बताई जाएगी';
+    const date=event.date ? new Intl.DateTimeFormat(locale,{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'Asia/Kolkata'}).format(dateOnly(event.date)).toUpperCase() : event.dateLabel || 'तिथि शीघ्र बताई जाएगी';
     const clock=event.time?clockLabel(event):null;
-    const title=shared?'<span class="timeline-couple">हिमांशी एवं शुभम</span><span class="sr-only"> — </span>शुभ विवाह':escapeHTML(event.title);
-    const time=clock?`<span>${escapeHTML(clock)}</span><small>भारतीय समय</small>`:'<span>समय शीघ्र</span><span>बताया जाएगा</span>';
-    return `<article role="listitem" class="timeline-event celebration-card event-type-${escapeHTML(event.type)}" id="event-${escapeHTML(event.id)}" data-position="${index%2===0?'art-left':'art-right'}" data-family="${escapeHTML(event.side)}"><figure class="timeline-scene">${eventIllustration(event)}</figure><span class="timeline-marker">${floralMarker()}</span><div class="timeline-details"><p class="timeline-date">${escapeHTML(date)}</p><p class="timeline-time ${clock?'':'is-pending'}" aria-label="${clock?escapeHTML(timeLabel(event)):'समय शीघ्र बताया जाएगा'}">${time}</p><h3>${title}</h3>${hindiNames[event.type]?`<p class="timeline-hindi" lang="hi">${hindiNames[event.type]}</p>`:''}<p class="timeline-description">${escapeHTML(event.timelineDescription || event.description)}</p><p class="timeline-venue">${escapeHTML(event.venue?venueLabel(event):'स्थान शीघ्र बताया जाएगा')}</p>${event.side==='shared'&&!event.time?'<p class="timeline-time-note">विवाह की रात्रि · सही समय शीघ्र बताया जाएगा</p>':''}<div class="timeline-actions">${event.venue?`<a href="${mapURL(event)}" target="_blank" rel="noopener noreferrer">रास्ता देखें ↗</a>`:''}${event.date&&event.time?`<button type="button" data-calendar="${escapeHTML(event.id)}">कैलेंडर में जोड़ें</button>`:''}</div>${shared?'<p class="timeline-family-note">दो परिवार · जीवन भर का साथ</p>':''}${event.dressCode?`<p class="event-dress">परिधान: ${escapeHTML(event.dressCode)}</p>`:''}</div></article>`;
+    const title=shared?'<span class="timeline-couple">हिमांशी संग शुभम</span><span class="sr-only"> — </span>शुभ विवाह':escapeHTML(event.title);
+    const time=clock?`<span>${escapeHTML(clock)}</span>`:event.timeLabel?`<span>${escapeHTML(event.timeLabel)}</span>`:'<span>समय शीघ्र</span><span>बताया जाएगा</span>';
+    return `<article role="listitem" class="timeline-event celebration-card event-type-${escapeHTML(event.type)}" id="event-${escapeHTML(event.id)}" data-position="${index%2===0?'art-left':'art-right'}" data-family="${escapeHTML(event.side)}"><figure class="timeline-scene">${eventIllustration(event)}</figure><span class="timeline-marker">${floralMarker()}</span><div class="timeline-details"><p class="timeline-date">${escapeHTML(date)}</p><p class="timeline-time ${clock?'':'is-pending'}" aria-label="${escapeHTML(timeLabel(event))}">${time}</p><h3>${title}</h3>${hindiNames[event.type]?`<p class="timeline-hindi" lang="hi">${hindiNames[event.type]}</p>`:''}<p class="timeline-description">${escapeHTML(event.timelineDescription || event.description)}</p><p class="timeline-venue">${escapeHTML(event.venue?venueLabel(event):'स्थान शीघ्र बताया जाएगा')}</p>${event.side==='shared'&&!event.time?'<p class="timeline-time-note">विवाह की रात्रि · सही समय शीघ्र बताया जाएगा</p>':''}<div class="timeline-actions">${mapURL(event)?`<a href="${mapURL(event)}" target="_blank" rel="noopener noreferrer">रास्ता देखें ↗</a>`:''}${event.date&&event.time?`<button type="button" data-calendar="${escapeHTML(event.id)}">कैलेंडर में जोड़ें</button>`:''}</div>${shared?'<p class="timeline-family-note">दो परिवार · जीवन भर का साथ</p>':''}${event.dressCode?`<p class="event-dress">परिधान: ${escapeHTML(event.dressCode)}</p>`:''}</div></article>`;
   }
   let timelineObserver;
   function updateTimelineProgress() {
@@ -253,7 +271,9 @@
     }
     updateTimelineProgress();
   });
-  $('#unassigned-events').innerHTML = config.events.filter(event => event.side === 'unassigned').map(event => `<article class="unassigned-event">${eventIllustration(event,true)}<div><small>आयोजन किस परिवार का है, इसकी पुष्टि बाकी है</small><strong>${escapeHTML(event.title)}</strong><span>${escapeHTML(dateLabel(event))} · ${escapeHTML(timeLabel(event))}<br>${escapeHTML(venueLabel(event))}</span>${event.venue?`<br><a class="text-button" href="${mapURL(event)}" target="_blank" rel="noopener noreferrer">रास्ता देखें ↗</a>`:''}</div></article>`).join('');
+  const unassignedEvents = config.events.filter(event => event.side === 'unassigned');
+  $('.pending-events').hidden = unassignedEvents.length === 0;
+  $('#unassigned-events').innerHTML = unassignedEvents.map(event => `<article class="unassigned-event">${eventIllustration(event,true)}<div><small>आयोजन किस परिवार का है, इसकी पुष्टि बाकी है</small><strong>${escapeHTML(event.title)}</strong><span>${escapeHTML(dateLabel(event))} · ${escapeHTML(timeLabel(event))}<br>${escapeHTML(venueLabel(event))}</span>${mapURL(event)?`<br><a class="text-button" href="${mapURL(event)}" target="_blank" rel="noopener noreferrer">रास्ता देखें ↗</a>`:''}</div></article>`).join('');
   $('#story-copy').innerHTML = config.story.paragraphs.map(paragraph => `<p>${escapeHTML(paragraph)}</p>`).join('');
   $('#story-heading').textContent = config.story.heading;
   $('#family-cards').innerHTML = ['bride','groom'].map(side => { const family = config.families[side]; return `<article class="family-card"><span aria-hidden="true">❧</span><p class="overline">${side==='bride'?'वधू का परिवार':'वर का परिवार'}</p><h3>${escapeHTML(family.name)}</h3>${family.members.length?`<ul>${family.members.map(member=>`<li>${escapeHTML(member.name)}<span>${escapeHTML(member.relationship)}</span></li>`).join('')}</ul>`:'<p class="family-placeholder">परिजनों के नाम शीघ्र साझा किए जाएँगे।</p>'}</article>`; }).join('');
@@ -279,13 +299,13 @@
     setTimeout(()=>URL.revokeObjectURL(url),1000); toast('कैलेंडर की फ़ाइल तैयार है। तिथि सहेजने के लिए इसे खोलें।');
   });
 
-  // Date-only countdown is explicitly labelled until an exact wedding time is confirmed.
+  // Confirmed ceremony time drives the countdown; a date-only fallback remains available.
   const countdownTarget = new Date(`${wedding.date}T${wedding.time || '00:00'}:00+05:30`);
   function updateCountdown(now = new Date()) {
     const remaining = Math.max(0,countdownTarget-now);
     const values = [Math.floor(remaining/86400000),Math.floor(remaining/3600000)%24,Math.floor(remaining/60000)%60,Math.floor(remaining/1000)%60];
     ['days','hours','minutes','seconds'].forEach((id,index)=>$('#'+id).textContent=padNumber(values[index]));
-    $('#countdown-note').textContent = remaining ? `${wedding.time?'हमारे शुभ विवाह तक':'विवाह तिथि के आरंभ तक'} · ${dateLabel(wedding)}${wedding.time?' · '+timeLabel(wedding):' · भारतीय समय'}` : 'हमारे जीवन भर के साथ का शुभारंभ हो चुका है। हमारी खुशियों का हिस्सा बनने के लिए धन्यवाद।';
+    $('#countdown-note').textContent = remaining ? `${wedding.time?'हमारे शुभ विवाह तक':'विवाह तिथि के आरंभ तक'} · ${dateLabel(wedding)}${wedding.time?' · '+timeLabel(wedding):''}` : 'हमारे जीवन भर के साथ का शुभारंभ हो चुका है। हमारी खुशियों का हिस्सा बनने के लिए धन्यवाद।';
   }
   updateCountdown(); setInterval(updateCountdown,1000);
 
@@ -329,7 +349,7 @@
     $$('#rsvp-events .rsvp-event').forEach(row=>attendance.set(row.dataset.event,{selected:row.querySelector('[type=checkbox]').checked,count:parseGuestCount(row.querySelector('[data-guest-count]').value)}));
   }
   function renderRsvpEvents() {
-    const entries=[...currentEvents(activeSide),wedding];
+    const entries=scheduleEvents(activeSide);
     $('#rsvp-events').innerHTML=entries.map(event=>{
       const saved=attendance.get(event.id)||{selected:false,count:1};
       const selected=saved.selected;
@@ -392,7 +412,7 @@
     input.value=formatNumber(Math.max(1,Math.min(50,(parseGuestCount(input.value)||1)+Number(button.dataset.step))));input.setAttribute('aria-valuenow',String(parseGuestCount(input.value)));input.setCustomValidity('');rememberAttendance();
   });
   function makeRsvpMessage({name,side,entries,message=''}) {
-    return ['विवाह में उपस्थिति की पुष्टि · हिमांशी एवं शुभम',`अतिथि: ${name.trim()}`,`परिवार: ${config.families[side].name} के समारोह`,'','हम निम्न समारोहों में शामिल होंगे:',...entries.map(({event,count})=>`• ${event.title} — ${formatNumber(count)} अतिथि (${dateLabel(event)})`),message.trim()?`\nसंदेश: ${message.trim()}`:'','\nसप्रेम!'].filter(line=>line!==null).join('\n');
+    return ['विवाह में उपस्थिति की पुष्टि · हिमांशी संग शुभम',`अतिथि: ${name.trim()}`,`परिवार: ${config.families[side].name} के समारोह`,'','हम निम्न समारोहों में शामिल होंगे:',...entries.map(({event,count})=>`• ${event.title} — ${formatNumber(count)} अतिथि (${dateLabel(event)})`),message.trim()?`\nसंदेश: ${message.trim()}`:'','\nसप्रेम!'].filter(line=>line!==null).join('\n');
   }
   function validateReply() {
     $('#rsvp-error').textContent='';
@@ -400,7 +420,7 @@
     const name=$('#guest-name').value.trim();
     if(!name){$('#rsvp-error').textContent='कृपया अपना नाम लिखें।';$('#guest-name').focus();return null;}
     rememberAttendance();
-    const entries=[...currentEvents(activeSide),wedding].filter(event=>attendance.get(event.id)?.selected).map(event=>({event,count:attendance.get(event.id).count}));
+    const entries=scheduleEvents(activeSide).filter(event=>attendance.get(event.id)?.selected).map(event=>({event,count:attendance.get(event.id).count}));
     if(!entries.length){$('#rsvp-error').textContent='कृपया कम से कम एक समारोह चुनें।';$('#rsvp-events input[type=checkbox]').focus();return null;}
     const invalid=entries.find(entry=>!Number.isInteger(entry.count)||entry.count<1||entry.count>50);
     if(invalid){$('#rsvp-error').textContent='हर चुने गए समारोह के लिए १ से ५० के बीच पूरी अतिथि संख्या लिखें।';$('#count-'+invalid.event.id).focus();return null;}
@@ -428,9 +448,9 @@
     $('#rsvp-status').textContent='आपका तैयार संदेश व्हाट्सऐप पर खुलेगा। वहाँ उसे जाँचकर स्वयं भेजें; इस वेबसाइट ने आपका उत्तर नहीं भेजा है।';
   });
 
-  // Optional licensed audio. No track is bundled or started automatically.
+  // User-configured audio: playback only starts on an explicit music-button click.
   const audio=$('#background-music'),musicButton=$('#music-toggle');
-  if(config.music.src&&config.music.licence){audio.src=config.music.src;musicButton.hidden=false;musicButton.setAttribute('aria-label',`${config.music.title || 'पृष्ठभूमि का संगीत'} चलाएँ`);}
+  if(config.music.src&&config.music.enabled!==false){audio.src=config.music.src;audio.volume=config.music.volume ?? 0.4;musicButton.hidden=false;musicButton.setAttribute('aria-label',`${config.music.title || 'पृष्ठभूमि का संगीत'} चलाएँ`);}
   function updateMusic(){const playing=!audio.paused;musicButton.textContent=playing?'Ⅱ संगीत रोकें':'♫ संगीत चलाएँ';musicButton.setAttribute('aria-pressed',String(playing));musicButton.setAttribute('aria-label',playing?'पृष्ठभूमि का संगीत रोकें':'पृष्ठभूमि का संगीत चलाएँ');}
   musicButton.addEventListener('click',async()=>{
     try{if(audio.paused)await audio.play();else audio.pause();updateMusic();$('#music-status').textContent=audio.paused?'संगीत रुक गया है।':'संगीत चल रहा है।';}
